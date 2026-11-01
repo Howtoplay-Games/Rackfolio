@@ -1,6 +1,5 @@
 package com.portproof.core.designsystem.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -44,12 +43,11 @@ fun PpSearchField(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp),
-        shape = PortProofTheme.shapes.input,
-        color = colors.surface,
-        border = BorderStroke(1.dp, colors.border),
+        shape = PortProofTheme.shapes.pill,
+        color = colors.surfaceMuted,
     ) {
         Row(
-            modifier = Modifier.padding(start = 14.dp, end = 4.dp),
+            modifier = Modifier.padding(start = 18.dp, end = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {

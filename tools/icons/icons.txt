@@ -54,3 +54,6 @@ cctv Cctv
 router Router
 qr-code QrCode
 scan-line Scan
+# Navigation and header (reference redesign)
+bell Bell
+chart-no-axes-column BarChart

@@ -26,26 +26,28 @@ private fun style(size: Int, weight: FontWeight, lineHeight: Int, tracking: Doub
     letterSpacing = tracking.em,
 )
 
+/** Light weights and generous sizes, as in the reference: titles are Medium, figures Regular. */
 internal val PortProofTypography = Typography(
-    displaySmall = style(32, FontWeight.Bold, 38, -0.02),
-    headlineMedium = style(26, FontWeight.SemiBold, 32, -0.02),
-    headlineSmall = style(22, FontWeight.SemiBold, 28, -0.015),
-    titleLarge = style(19, FontWeight.SemiBold, 26, -0.01),
-    titleMedium = style(16, FontWeight.SemiBold, 22, -0.01),
-    titleSmall = style(14, FontWeight.SemiBold, 20, -0.005),
+    displaySmall = style(32, FontWeight.Normal, 38, -0.02),
+    headlineMedium = style(26, FontWeight.Medium, 32, -0.02),
+    headlineSmall = style(22, FontWeight.Normal, 28, -0.015),
+    titleLarge = style(20, FontWeight.Medium, 26, -0.01),
+    titleMedium = style(18, FontWeight.Medium, 24, -0.01),
+    titleSmall = style(15, FontWeight.Medium, 20, -0.005),
     bodyLarge = style(16, FontWeight.Normal, 24),
     bodyMedium = style(14, FontWeight.Normal, 20),
     bodySmall = style(12, FontWeight.Normal, 16, 0.005),
     labelLarge = style(14, FontWeight.Medium, 20),
     labelMedium = style(12, FontWeight.Medium, 16, 0.005),
-    labelSmall = style(11, FontWeight.Medium, 14, 0.01),
+    labelSmall = style(11, FontWeight.Normal, 14, 0.01),
 )
 
-/** Extra styles for figures. Tabular numerals keep columns of numbers aligned. */
+/** Figure styles. Tabular numerals keep changing values from shifting horizontally. */
 @Immutable
 data class PortProofNumberStyles(
-    val metricLarge: TextStyle = style(30, FontWeight.Bold, 36, -0.02).copy(fontFeatureSettings = "tnum"),
-    val metric: TextStyle = style(22, FontWeight.Bold, 28, -0.02).copy(fontFeatureSettings = "tnum"),
-    val metricSmall: TextStyle = style(15, FontWeight.SemiBold, 20, -0.01).copy(fontFeatureSettings = "tnum"),
+    val metricLarge: TextStyle = style(32, FontWeight.Normal, 38, -0.02).copy(fontFeatureSettings = "tnum"),
+    val metric: TextStyle = style(24, FontWeight.Normal, 30, -0.02).copy(fontFeatureSettings = "tnum"),
+    val metricUnit: TextStyle = style(16, FontWeight.Normal, 22),
+    val metricSmall: TextStyle = style(15, FontWeight.Medium, 20, -0.01).copy(fontFeatureSettings = "tnum"),
     val caption: TextStyle = style(11, FontWeight.Medium, 14, 0.01).copy(fontFeatureSettings = "tnum"),
 )

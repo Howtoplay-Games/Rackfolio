@@ -1,10 +1,12 @@
 package com.portproof.core.designsystem.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
@@ -20,7 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.portproof.core.designsystem.theme.PortProofTheme
 
-/** Flat white card with a hairline border: the basic building block of every screen. */
+/** White card with a hairline border and 20dp corners: the basic building block of every screen. */
 @Composable
 fun PpCard(
     modifier: Modifier = Modifier,
@@ -42,25 +44,35 @@ fun PpCard(
     }
 }
 
-/** Small outlined square holding an icon, as used beside card labels. */
+/** Inner grey panel inside a card (chart areas, summaries). */
+@Composable
+fun PpPanel(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(PortProofTheme.colors.surfaceMuted, PortProofTheme.shapes.panel)
+            .padding(14.dp),
+        content = content,
+    )
+}
+
+/** Soft circle holding an outline icon (list rows, activity entries, empty states). */
 @Composable
 fun PpIconTile(
     icon: ImageVector,
     modifier: Modifier = Modifier,
-    size: Dp = 30.dp,
-    iconSize: Dp = 16.dp,
+    size: Dp = 36.dp,
+    iconSize: Dp = 18.dp,
     tint: Color = PortProofTheme.colors.textPrimary,
-    containerColor: Color = PortProofTheme.colors.surface,
+    containerColor: Color = PortProofTheme.colors.surfaceMuted,
 ) {
-    Surface(
-        modifier = modifier.size(size),
-        shape = PortProofTheme.shapes.tile,
-        color = containerColor,
-        border = BorderStroke(1.dp, PortProofTheme.colors.border),
+    Box(
+        modifier = modifier
+            .size(size)
+            .background(containerColor, PortProofTheme.shapes.pill),
+        contentAlignment = Alignment.Center,
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(iconSize))
-        }
+        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(iconSize))
     }
 }
 
@@ -69,7 +81,7 @@ fun PpDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(modifier = modifier, thickness = 1.dp, color = PortProofTheme.colors.divider)
 }
 
-/** Semantic colour roles for chips, deltas and status indicators. */
+/** Semantic colour roles for chips and status indicators. */
 enum class PpTone { Neutral, Accent, Success, Warning, Danger }
 
 data class PpToneColors(val content: Color, val container: Color, val indicator: Color)

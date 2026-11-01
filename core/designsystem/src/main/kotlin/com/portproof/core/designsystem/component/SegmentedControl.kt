@@ -1,7 +1,6 @@
 package com.portproof.core.designsystem.component
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,28 +38,27 @@ fun <T> PpSegmentedControl(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(colors.surfaceSunken, PortProofTheme.shapes.control)
+            .background(colors.surfaceMuted, PortProofTheme.shapes.pill)
             .padding(3.dp)
             .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(3.dp),
     ) {
         options.forEach { option ->
             val isSelected = option == selected
-            val container by animateColorAsState(if (isSelected) colors.surface else Color.Transparent, label = "segment")
+            val container by animateColorAsState(if (isSelected) colors.inverseSurface else Color.Transparent, label = "segment")
             Surface(
                 modifier = Modifier
                     .weight(1f)
                     .heightIn(min = 44.dp)
                     .selectable(isSelected, enabled = enabled, role = Role.RadioButton) { onSelect(option) },
-                shape = PortProofTheme.shapes.tile,
+                shape = PortProofTheme.shapes.pill,
                 color = container,
-                border = if (isSelected) BorderStroke(1.dp, colors.border) else null,
-            ) {
+                            ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 6.dp)) {
                     Text(
                         text = label(option),
                         style = MaterialTheme.typography.labelMedium,
-                        color = if (isSelected) colors.textPrimary else colors.textSecondary,
+                        color = if (isSelected) colors.onInverseSurface else colors.textSecondary,
                         textAlign = TextAlign.Center,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,

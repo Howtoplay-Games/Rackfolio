@@ -44,7 +44,7 @@ fun ActivityRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        PpIconTile(entry.icon(), size = 32.dp, iconSize = 16.dp, containerColor = colors.surfaceMuted)
+        PpIconTile(entry.icon(), size = 40.dp, iconSize = 18.dp)
         Column(Modifier.weight(1f)) {
             Text(entry.description(), style = MaterialTheme.typography.bodyMedium, color = colors.textPrimary, maxLines = 1)
             if (showProject) {

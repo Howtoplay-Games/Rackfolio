@@ -20,26 +20,31 @@ data class PortProofSpacing(
     /** Horizontal padding of screen content on phones. */
     val screenGutter: Dp = 16.dp,
     /** Gap between stacked cards. */
-    val cardGap: Dp = 12.dp,
+    val cardGap: Dp = 14.dp,
+    /** Gap between screen sections (title + content blocks). */
+    val sectionGap: Dp = 24.dp,
     /** Readable maximum width for content on tablets and foldables. */
     val maxContentWidth: Dp = 880.dp,
 )
 
-/** Corner radii: moderate rounding, deliberately tighter than the Material defaults for cards. */
+/** Corner radii taken from the reference: soft 20dp cards, pill buttons and navigation. */
 @Immutable
 data class PortProofShapes(
-    val card: RoundedCornerShape = RoundedCornerShape(14.dp),
-    val tile: RoundedCornerShape = RoundedCornerShape(10.dp),
-    val control: RoundedCornerShape = RoundedCornerShape(10.dp),
-    val input: RoundedCornerShape = RoundedCornerShape(12.dp),
+    val card: RoundedCornerShape = RoundedCornerShape(20.dp),
+    val hero: RoundedCornerShape = RoundedCornerShape(22.dp),
+    val feature: RoundedCornerShape = RoundedCornerShape(24.dp),
+    val panel: RoundedCornerShape = RoundedCornerShape(16.dp),
+    val tile: RoundedCornerShape = RoundedCornerShape(12.dp),
+    val control: RoundedCornerShape = RoundedCornerShape(percent = 50),
+    val input: RoundedCornerShape = RoundedCornerShape(14.dp),
     val pill: RoundedCornerShape = RoundedCornerShape(percent = 50),
     val sheet: RoundedCornerShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
 )
 
 internal val PortProofMaterialShapes = Shapes(
-    extraSmall = RoundedCornerShape(6.dp),
-    small = RoundedCornerShape(10.dp),
-    medium = RoundedCornerShape(14.dp),
-    large = RoundedCornerShape(18.dp),
-    extraLarge = RoundedCornerShape(24.dp),
+    extraSmall = RoundedCornerShape(8.dp),
+    small = RoundedCornerShape(12.dp),
+    medium = RoundedCornerShape(16.dp),
+    large = RoundedCornerShape(24.dp),
+    extraLarge = RoundedCornerShape(28.dp),
 )

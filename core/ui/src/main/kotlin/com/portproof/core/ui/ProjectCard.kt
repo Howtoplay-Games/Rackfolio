@@ -28,9 +28,9 @@ import com.portproof.core.model.Project
 @Composable
 fun ProjectCard(project: Project, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = PortProofTheme.colors
-    PpCard(modifier = modifier, onClick = onClick, contentPadding = PaddingValues(14.dp)) {
+    PpCard(modifier = modifier, onClick = onClick, contentPadding = PaddingValues(16.dp)) {
         Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            PpIconTile(project.status.icon, size = 36.dp, iconSize = 18.dp, containerColor = colors.surfaceMuted)
+            PpIconTile(project.status.icon, size = 44.dp, iconSize = 20.dp)
             Column(Modifier.weight(1f)) {
                 Text(
                     project.name,
