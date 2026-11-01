@@ -6,23 +6,27 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.portproof.core.data.repository.PlanRepository
 import com.portproof.core.data.repository.ProjectRepository
+import com.portproof.core.model.ActiveProjectLimitException
 import com.portproof.core.model.FieldError
 import com.portproof.core.model.ProjectField
 import com.portproof.core.model.ProjectId
 import com.portproof.core.model.ProjectStatus
 import com.portproof.core.model.ProjectValidationResult
 import com.portproof.core.model.ProjectValidator
+import com.portproof.core.model.activeProjectLimit
 import com.portproof.feature.projects.navigation.ProjectArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 enum class EditorLoadState { Loading, Ready, NotFound }
 
-enum class EditorMessage { FixFields, SaveFailed }
+enum class EditorMessage { FixFields, SaveFailed, LimitReached }
 
 /**
  * Create/edit form. State lives in Compose snapshot state so text fields update synchronously,
@@ -32,6 +36,7 @@ enum class EditorMessage { FixFields, SaveFailed }
 class ProjectEditorViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val projectRepository: ProjectRepository,
+    planRepository: PlanRepository,
 ) : ViewModel() {
 
     private val editingId: ProjectId? = savedStateHandle.get<String>(ProjectArgs.PROJECT_ID)?.let(::ProjectId)
@@ -56,8 +61,27 @@ class ProjectEditorViewModel @Inject constructor(
 
     val hasUnsavedChanges: Boolean get() = original != null && form != original
 
+    /** The free plan's limit while every active slot is used; null on Pro or below the limit. */
+    private var fullActiveLimit by mutableStateOf<Int?>(null)
+
+    /**
+     * Non-null (the limit) when saving this form would add an active project the plan has no room
+     * for: a new open project, or a completed one being reopened.
+     */
+    val limitNotice: Int?
+        get() {
+            val limit = fullActiveLimit ?: return null
+            val addsActive = form.status.isOpen && (isNew || original?.status == ProjectStatus.COMPLETED)
+            return limit.takeIf { addsActive }
+        }
+
     init {
         if (editingId != null) loadExisting(editingId)
+        viewModelScope.launch {
+            combine(planRepository.plan, projectRepository.observeSummary()) { plan, summary ->
+                plan.activeProjectLimit?.takeIf { summary.active >= it }
+            }.collect { fullActiveLimit = it }
+        }
     }
 
     private fun loadExisting(id: ProjectId) {
@@ -124,6 +148,8 @@ class ProjectEditorViewModel @Inject constructor(
                 }
             } catch (e: CancellationException) {
                 throw e
+            } catch (_: ActiveProjectLimitException) {
+                message = EditorMessage.LimitReached
             } catch (_: Exception) {
                 message = EditorMessage.SaveFailed
             } finally {

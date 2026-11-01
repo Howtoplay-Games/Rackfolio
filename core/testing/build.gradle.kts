@@ -8,6 +8,7 @@ android {
 
 dependencies {
     api(project(":core:data"))
+    api(project(":core:billing"))
     api(project(":core:model"))
     api(libs.junit4)
     api(libs.kotlinx.coroutines.test)

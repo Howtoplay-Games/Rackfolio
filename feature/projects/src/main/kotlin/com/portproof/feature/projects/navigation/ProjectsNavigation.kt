@@ -5,15 +5,17 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.portproof.core.model.ProjectId
-import com.portproof.core.model.ProjectListFilter
 import com.portproof.feature.projects.detail.ProjectDetailRoute as ProjectDetailScreenRoute
 import com.portproof.feature.projects.editor.ProjectEditorRoute as ProjectEditorScreenRoute
 import com.portproof.feature.projects.list.ProjectListRoute
 import kotlinx.serialization.Serializable
 
-/** Project list. [filter] is a [ProjectListFilter.code] preselected by the caller. */
+/**
+ * Projects tab. [filter] is a [com.portproof.core.model.ProjectListFilter.code] and [sort] a [com.portproof.core.model.ProjectSort.code]
+ * preselected by the caller (both optional).
+ */
 @Serializable
-data class ProjectsRoute(val filter: String? = null)
+data class ProjectsRoute(val filter: String? = null, val sort: String? = null)
 
 @Serializable
 data class ProjectDetailRoute(val projectId: String)
@@ -25,6 +27,7 @@ data class ProjectEditorRoute(val projectId: String? = null)
 /** SavedStateHandle keys; they must match the route property names above. */
 internal object ProjectArgs {
     const val FILTER = "filter"
+    const val SORT = "sort"
     const val PROJECT_ID = "projectId"
 }
 
@@ -33,15 +36,13 @@ fun NavController.navigateToProjectDetail(id: ProjectId, navOptions: NavOptions?
 
 fun NavController.navigateToProjectEditor(id: ProjectId? = null) = navigate(ProjectEditorRoute(id?.value))
 
-fun NavController.navigateToProjects(filter: ProjectListFilter) = navigate(ProjectsRoute(filter.code))
-
 fun NavGraphBuilder.projectsScreen(
-    onBack: () -> Unit,
     onProjectClick: (ProjectId) -> Unit,
+    onEditProject: (ProjectId) -> Unit,
     onCreateProject: () -> Unit,
 ) {
     composable<ProjectsRoute> {
-        ProjectListRoute(onBack = onBack, onProjectClick = onProjectClick, onCreateProject = onCreateProject)
+        ProjectListRoute(onProjectClick = onProjectClick, onEditProject = onEditProject, onCreateProject = onCreateProject)
     }
 }
 
@@ -51,9 +52,10 @@ fun NavGraphBuilder.projectDetailScreen(
     onHome: () -> Unit,
     onEdit: (ProjectId) -> Unit,
     onDeleted: () -> Unit,
+    onOpenPro: () -> Unit,
 ) {
     composable<ProjectDetailRoute> {
-        ProjectDetailScreenRoute(onBack = onBack, onHome = onHome, onEdit = onEdit, onDeleted = onDeleted)
+        ProjectDetailScreenRoute(onBack = onBack, onHome = onHome, onEdit = onEdit, onDeleted = onDeleted, onOpenPro = onOpenPro)
     }
 }
 
@@ -64,8 +66,9 @@ fun NavGraphBuilder.projectDetailScreen(
 fun NavGraphBuilder.projectEditorScreen(
     onClose: () -> Unit,
     onSaved: (id: ProjectId, created: Boolean) -> Unit,
+    onOpenPro: () -> Unit,
 ) {
     composable<ProjectEditorRoute> {
-        ProjectEditorScreenRoute(onClose = onClose, onSaved = onSaved)
+        ProjectEditorScreenRoute(onClose = onClose, onSaved = onSaved, onOpenPro = onOpenPro)
     }
 }

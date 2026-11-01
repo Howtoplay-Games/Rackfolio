@@ -13,6 +13,9 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -28,10 +31,11 @@ class ProjectListViewModelTest {
             testProject(id = "old", status = ProjectStatus.COMPLETED, archived = true),
         ),
     )
+    private val clock = Clock.fixed(Instant.parse("2026-11-01T10:00:00Z"), ZoneOffset.UTC)
 
     @Test
     fun navigationArgumentPreselectsTheFilter() = runTest {
-        val vm = ProjectListViewModel(SavedStateHandle(mapOf("filter" to "ARCHIVED")), repository)
+        val vm = ProjectListViewModel(SavedStateHandle(mapOf("filter" to "ARCHIVED")), repository, clock)
         backgroundScope.launch { vm.uiState.collect() }
         advanceUntilIdle()
         assertEquals(ProjectListFilter.ARCHIVED, vm.uiState.value.filter)
@@ -40,7 +44,7 @@ class ProjectListViewModelTest {
 
     @Test
     fun changingFilterUpdatesTheList() = runTest {
-        val vm = ProjectListViewModel(SavedStateHandle(), repository)
+        val vm = ProjectListViewModel(SavedStateHandle(), repository, clock)
         backgroundScope.launch { vm.uiState.collect() }
         advanceUntilIdle()
         assertEquals(setOf("open", "done"), vm.uiState.value.projects.map { it.id.value }.toSet())
@@ -53,7 +57,7 @@ class ProjectListViewModelTest {
 
     @Test
     fun unknownFilterArgumentFallsBackToAll() = runTest {
-        val vm = ProjectListViewModel(SavedStateHandle(mapOf("filter" to "BOGUS")), repository)
+        val vm = ProjectListViewModel(SavedStateHandle(mapOf("filter" to "BOGUS")), repository, clock)
         backgroundScope.launch { vm.uiState.collect() }
         advanceUntilIdle()
         assertEquals(ProjectListFilter.ALL, vm.uiState.value.filter)

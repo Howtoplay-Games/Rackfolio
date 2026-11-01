@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  PortProof requests no permissions in Phase 1 (deliberately no INTERNET permission: the app is
-  offline-only). CAMERA is added with the QR scanner in Phase 2 and requested at the point of use.
+  PortProof declares no permissions itself and its own code makes no network calls. Libraries merge in:
+  - com.android.vending.BILLING, INTERNET, ACCESS_NETWORK_STATE: Google Play Billing and the Google
+    logging component it depends on (see ARCHITECTURE.md, ADR-011).
+  - USE_BIOMETRIC, USE_FINGERPRINT: androidx.biometric, for fingerprint or face unlock.
+  CAMERA is added with the QR scanner in Phase 2 and requested at the point of use.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">

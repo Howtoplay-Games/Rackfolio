@@ -6,7 +6,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.portproof.core.data.repository.OfflineFirstActivityRepository
 import com.portproof.core.data.repository.OfflineFirstProjectRepository
 import com.portproof.core.database.PortProofDatabase
+import com.portproof.core.data.repository.PlanRepository
+import com.portproof.core.model.ActiveProjectLimitException
 import com.portproof.core.model.ActivityAction
+import com.portproof.core.model.AppPlan
 import com.portproof.core.model.ProjectDraft
 import com.portproof.core.model.ProjectId
 import com.portproof.core.model.ProjectInput
@@ -25,6 +28,7 @@ import org.robolectric.annotation.Config
 import java.time.Instant
 import java.time.LocalDate
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -35,6 +39,7 @@ import kotlin.test.assertTrue
 class OfflineFirstProjectRepositoryTest {
 
     private val clock = TestClock()
+    private val plans = FixedPlanRepository(AppPlan.Pro)
     private lateinit var db: PortProofDatabase
     private lateinit var projects: OfflineFirstProjectRepository
     private lateinit var activity: OfflineFirstActivityRepository
@@ -43,7 +48,7 @@ class OfflineFirstProjectRepositoryTest {
     fun setUp() {
         db = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(), PortProofDatabase::class.java)
             .build()
-        projects = OfflineFirstProjectRepository(db, db.projectDao(), db.activityDao(), clock)
+        projects = OfflineFirstProjectRepository(db, db.projectDao(), db.activityDao(), plans, clock)
         activity = OfflineFirstActivityRepository(db.activityDao(), clock)
     }
 
@@ -178,4 +183,49 @@ class OfflineFirstProjectRepositoryTest {
         projects.createProject(later)
         assertEquals(listOf("Due"), projects.observeUpcomingDeadlines(LocalDate.of(2026, 11, 7), 10).first().map { it.name })
     }
+
+    @Test
+    fun freePlanBlocksOneActiveProjectTooManyAndWritesNothing() = runTest {
+        plans.value = AppPlan.Free(activeProjectLimit = 2)
+        projects.createProject(draft(name = "One"))
+        projects.createProject(draft(name = "Two"))
+
+        val error = assertFailsWith<ActiveProjectLimitException> { projects.createProject(draft(name = "Three")) }
+        assertEquals(2, error.limit)
+        assertEquals(2, projects.observeSummary().first().active)
+        assertEquals(2, activity.observeRecentActivity(10).first().size)
+
+        // Completed projects do not count, so they can still be recorded.
+        projects.createProject(draft(name = "Done", status = ProjectStatus.COMPLETED))
+        assertEquals(3, projects.observeSummary().first().total)
+    }
+
+    @Test
+    fun freePlanBlocksReopeningAndRestoringAtTheLimit() = runTest {
+        val done = projects.createProject(draft(name = "Done", status = ProjectStatus.COMPLETED))
+        val archived = projects.createProject(draft(name = "Archived"))
+        projects.archiveProject(archived)
+        projects.createProject(draft(name = "Open"))
+        plans.value = AppPlan.Free(activeProjectLimit = 1)
+
+        assertFailsWith<ActiveProjectLimitException> { projects.setStatus(done, ProjectStatus.IN_PROGRESS) }
+        assertFailsWith<ActiveProjectLimitException> { projects.updateProject(done, draft(name = "Done", status = ProjectStatus.ON_HOLD)) }
+        assertFailsWith<ActiveProjectLimitException> { projects.restoreProject(archived) }
+        assertEquals(ProjectStatus.COMPLETED, projects.getProject(done)?.status)
+        assertNotNull(projects.getProject(archived)?.archivedAt)
+
+        // Edits that keep the active count unchanged still work.
+        assertTrue(projects.updateProject(done, draft(name = "Done and renamed", status = ProjectStatus.COMPLETED)))
+
+        plans.value = AppPlan.Pro
+        assertTrue(projects.restoreProject(archived))
+        assertTrue(projects.setStatus(done, ProjectStatus.IN_PROGRESS))
+        assertEquals(3, projects.observeSummary().first().active)
+    }
+}
+
+/** Plan source whose value each test sets directly. */
+private class FixedPlanRepository(var value: AppPlan) : PlanRepository {
+    override val plan get() = kotlinx.coroutines.flow.flowOf(value)
+    override suspend fun currentPlan(): AppPlan = value
 }

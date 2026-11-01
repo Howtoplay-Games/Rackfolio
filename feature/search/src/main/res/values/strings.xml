@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="search_title">Search\nprojects</string>
+    <string name="search_title">Search</string>
     <string name="search_placeholder">Search projects</string>
     <string name="search_hint_title">Find a project</string>
     <string name="search_hint_message">Search by project name, reference number, customer, site name or address. Archived projects are included.</string>

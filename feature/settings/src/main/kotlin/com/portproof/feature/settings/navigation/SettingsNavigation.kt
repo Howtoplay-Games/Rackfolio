@@ -1,17 +1,14 @@
 package com.portproof.feature.settings.navigation
 
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.portproof.feature.settings.SettingsRoute as SettingsScreenRoute
 import kotlinx.serialization.Serializable
 
-/** Settings, opened from the avatar on Home. */
+/** Settings tab: plan, profile, login and security, appearance, privacy. */
 @Serializable
 data object SettingsRoute
 
-fun NavController.navigateToSettings() = navigate(SettingsRoute) { launchSingleTop = true }
-
-fun NavGraphBuilder.settingsScreen(onBack: () -> Unit) {
-    composable<SettingsRoute> { SettingsScreenRoute(onBack = onBack) }
+fun NavGraphBuilder.settingsScreen(onOpenPro: () -> Unit, onOpenSecurity: () -> Unit) {
+    composable<SettingsRoute> { SettingsScreenRoute(onOpenPro = onOpenPro, onOpenSecurity = onOpenSecurity) }
 }

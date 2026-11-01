@@ -26,18 +26,18 @@ private fun style(size: Int, weight: FontWeight, lineHeight: Int, tracking: Doub
     letterSpacing = tracking.em,
 )
 
-/** Reference type scale: large Medium-weight titles with tight tracking, small Regular captions. */
+/** Reference type scale: bold, tightly tracked titles; small regular captions. */
 internal val PortProofTypography = Typography(
-    displaySmall = style(32, FontWeight.Medium, 38, -0.03),
-    headlineMedium = style(30, FontWeight.Medium, 35, -0.03),
-    headlineSmall = style(24, FontWeight.Medium, 29, -0.025),
-    titleLarge = style(20, FontWeight.Medium, 26, -0.01),
-    titleMedium = style(18, FontWeight.Medium, 24, -0.01),
-    titleSmall = style(15, FontWeight.Medium, 20, -0.005),
+    displaySmall = style(32, FontWeight.Bold, 38, -0.03),
+    headlineMedium = style(30, FontWeight.Bold, 36, -0.03),
+    headlineSmall = style(24, FontWeight.Bold, 30, -0.025),
+    titleLarge = style(20, FontWeight.SemiBold, 26, -0.015),
+    titleMedium = style(17, FontWeight.SemiBold, 22, -0.01),
+    titleSmall = style(15, FontWeight.SemiBold, 20, -0.005),
     bodyLarge = style(16, FontWeight.Normal, 24),
     bodyMedium = style(14, FontWeight.Normal, 20),
     bodySmall = style(12, FontWeight.Normal, 16, 0.005),
-    labelLarge = style(14, FontWeight.Medium, 20),
+    labelLarge = style(14, FontWeight.SemiBold, 20),
     labelMedium = style(12, FontWeight.Medium, 16, 0.005),
     labelSmall = style(11, FontWeight.Normal, 14, 0.01),
 )
@@ -45,9 +45,12 @@ internal val PortProofTypography = Typography(
 /** Figure styles. Tabular numerals keep changing values from shifting horizontally. */
 @Immutable
 data class PortProofNumberStyles(
-    val metricLarge: TextStyle = style(32, FontWeight.Normal, 38, -0.02).copy(fontFeatureSettings = "tnum"),
-    val metric: TextStyle = style(24, FontWeight.Normal, 30, -0.02).copy(fontFeatureSettings = "tnum"),
-    val metricUnit: TextStyle = style(16, FontWeight.Normal, 22),
-    val metricSmall: TextStyle = style(15, FontWeight.Medium, 20, -0.01).copy(fontFeatureSettings = "tnum"),
+    /** Gauge centre ("1250 kcal" in the reference). */
+    val metricLarge: TextStyle = style(30, FontWeight.Bold, 36, -0.03).copy(fontFeatureSettings = "tnum"),
+    /** Card figures ("693 kcal"). */
+    val metric: TextStyle = style(22, FontWeight.Bold, 28, -0.02).copy(fontFeatureSettings = "tnum"),
+    val metricUnit: TextStyle = style(13, FontWeight.Medium, 18),
+    /** Small figures under card titles ("48g"). */
+    val metricSmall: TextStyle = style(13, FontWeight.SemiBold, 18).copy(fontFeatureSettings = "tnum"),
     val caption: TextStyle = style(11, FontWeight.Medium, 14, 0.01).copy(fontFeatureSettings = "tnum"),
 )

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -38,7 +39,7 @@ fun <T> PpSegmentedControl(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(colors.surfaceMuted, PortProofTheme.shapes.pill)
+            .background(colors.surfaceMuted, PortProofTheme.shapes.control)
             .padding(3.dp)
             .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(3.dp),
@@ -51,7 +52,7 @@ fun <T> PpSegmentedControl(
                     .weight(1f)
                     .heightIn(min = 44.dp)
                     .selectable(isSelected, enabled = enabled, role = Role.RadioButton) { onSelect(option) },
-                shape = PortProofTheme.shapes.pill,
+                shape = RoundedCornerShape(11.dp),
                 color = container,
                             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 6.dp)) {

@@ -3,6 +3,8 @@ package com.portproof.feature.settings
 import com.portproof.core.model.ProfileRules
 import com.portproof.core.model.ThemeMode
 import com.portproof.core.testing.MainDispatcherRule
+import com.portproof.core.testing.TestPlanRepository
+import com.portproof.core.testing.TestProjectRepository
 import com.portproof.core.testing.TestUserPreferencesRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -19,7 +21,7 @@ class SettingsViewModelTest {
 
     private val repository = TestUserPreferencesRepository()
     // Created lazily so viewModelScope is built after MainDispatcherRule has replaced Dispatchers.Main.
-    private val vm by lazy { SettingsViewModel(repository) }
+    private val vm by lazy { SettingsViewModel(repository, TestPlanRepository(), TestProjectRepository()) }
 
     @Test
     fun profileValuesAreSanitisedBeforeSaving() = runTest {

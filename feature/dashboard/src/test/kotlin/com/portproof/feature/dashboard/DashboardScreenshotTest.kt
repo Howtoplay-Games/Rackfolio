@@ -7,7 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.portproof.core.designsystem.theme.PortProofTheme
+import com.portproof.core.model.ProjectStatus
 import com.portproof.core.model.ProjectSummary
+import com.portproof.core.testing.testProject
+import java.time.Instant
+import java.time.LocalDate
 import com.portproof.core.testing.saveScreenshot
 import org.junit.Rule
 import org.junit.Test
@@ -24,14 +28,22 @@ class DashboardScreenshotTest {
     @get:Rule
     val compose = createComposeRule()
 
+    private val today = LocalDate.of(2026, 11, 1)
     private val state = DashboardUiState(
         isLoading = false,
-        technicianName = "Nick Turner",
         summary = ProjectSummary(
-            total = 20, active = 14, completed = 6, archived = 3, planned = 4, inProgress = 9, onHold = 1,
+            total = 20, active = 14, completed = 13, archived = 3, planned = 4, inProgress = 9, onHold = 1,
             createdThisMonth = 3, completedThisMonth = 2,
         ),
-        today = java.time.LocalDate.of(2026, 9, 7),
+        recentProjects = listOf(
+            testProject(id = "1", name = "Warehouse CCTV upgrade", status = ProjectStatus.IN_PROGRESS, updatedAt = Instant.now().minusSeconds(5 * 3600))
+                .copy(startDate = today.minusDays(11), endDate = today.plusDays(8)),
+            testProject(id = "2", name = "Clinic access control", status = ProjectStatus.PLANNED, updatedAt = Instant.now().minusSeconds(26 * 3600))
+                .copy(startDate = today.plusDays(4), endDate = today.plusDays(20)),
+            testProject(id = "3", name = "Office network refit", status = ProjectStatus.ON_HOLD, updatedAt = Instant.now().minusSeconds(3 * 86400))
+                .copy(startDate = today.minusDays(30), endDate = today.minusDays(2)),
+        ),
+        today = today,
     )
 
     private val noActions = DashboardActions({}, {}, {}, {}, {})

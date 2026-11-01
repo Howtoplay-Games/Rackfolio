@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- List -->
-    <string name="projects_title">Your\nprojects</string>
-    <string name="projects_stat_active">Active\nprojects</string>
-    <string name="projects_stat_completed">Completed\nprojects</string>
+    <string name="projects_section_all">All projects</string>
+    <string name="projects_section_active">Active projects</string>
+    <string name="projects_section_completed">Completed projects</string>
+    <string name="projects_section_archived">Archived projects</string>
+    <string name="projects_new_link">New project</string>
     <string name="projects_search_placeholder">Search name, customer, site</string>
     <string name="projects_filter_all">All</string>
     <string name="projects_filter_active">Active</string>
@@ -13,12 +15,8 @@
     <string name="projects_sort_recent">Recently updated</string>
     <string name="projects_sort_name">Name</string>
     <string name="projects_sort_start_date">Start date</string>
-    <plurals name="projects_count">
-        <item quantity="one">%d project</item>
-        <item quantity="other">%d projects</item>
-    </plurals>
     <string name="projects_empty_title">No projects yet</string>
-    <string name="projects_empty_message">Create a project for each installation job to document equipment, cabling and handover.</string>
+    <string name="projects_empty_message">Create a project for each installation job: customer, site, dates and status.</string>
     <string name="projects_empty_filtered_title">Nothing here</string>
     <string name="projects_empty_filtered_message">No projects match this filter.</string>
     <string name="projects_empty_search_message">No projects match \u201c%1$s\u201d.</string>
@@ -83,11 +81,12 @@
     <string name="project_delete_confirm">Delete permanently</string>
 
     <!-- Editor -->
-    <string name="project_editor_new_title">New\nproject</string>
-    <string name="project_editor_edit_title">Edit\nproject</string>
+    <string name="project_editor_new_title">New project</string>
+    <string name="project_editor_edit_title">Edit project</string>
     <string name="project_editor_create">Create project</string>
     <string name="project_editor_save">Save changes</string>
     <string name="project_editor_section_project">Project</string>
+    <string name="project_editor_see_pro">See PortProof Pro</string>
     <string name="project_field_name">Project name *</string>
     <string name="project_field_name_placeholder">e.g. Warehouse CCTV upgrade</string>
     <string name="project_field_reference">Reference number</string>

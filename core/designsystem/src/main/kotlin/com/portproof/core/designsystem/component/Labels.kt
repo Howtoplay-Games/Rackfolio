@@ -1,13 +1,9 @@
 package com.portproof.core.designsystem.component
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +21,7 @@ fun PpSectionHeader(
     title: String,
     modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.titleMedium,
+    badge: String? = null,
     action: (@Composable () -> Unit)? = null,
 ) {
     // With an action the row reserves a 48dp touch target; without one it stays compact.
@@ -38,31 +35,11 @@ fun PpSectionHeader(
             text = title,
             style = style,
             color = PortProofTheme.colors.textPrimary,
-            modifier = Modifier
-                .weight(1f)
-                .semantics { heading() },
+            modifier = Modifier.semantics { heading() },
         )
+        if (badge != null) PpCountBadge(badge, Modifier.padding(start = 8.dp))
+        androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
         action?.invoke()
-    }
-}
-
-/** Compact status label with a coloured dot. Colour is never the only signal: text is always shown. */
-@Composable
-fun PpStatusPill(text: String, tone: PpTone, modifier: Modifier = Modifier) {
-    val toneColors = tone.colors()
-    Row(
-        modifier = modifier
-            .background(toneColors.container, PortProofTheme.shapes.pill)
-            .padding(horizontal = 8.dp, vertical = 3.dp),
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            Modifier
-                .size(6.dp)
-                .background(toneColors.indicator, PortProofTheme.shapes.pill),
-        )
-        Text(text, style = MaterialTheme.typography.labelSmall, color = toneColors.content, maxLines = 1)
     }
 }
 

@@ -96,6 +96,10 @@ interface ProjectDao {
     )
     fun observeCounts(since: Long): Flow<ProjectCountsRow>
 
+    /** Projects that count towards the free plan's limit: not archived and not completed. */
+    @Query("SELECT COUNT(*) FROM projects WHERE archived_at IS NULL AND status != 'COMPLETED'")
+    suspend fun countActive(): Int
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(project: ProjectEntity)
 

@@ -1,5 +1,7 @@
 package com.portproof.feature.projects.detail
 
+import com.portproof.core.model.scheduleStateOf
+import com.portproof.core.model.ScheduleState
 import com.portproof.core.model.ProjectStatus
 import com.portproof.core.testing.testProject
 import org.junit.Test

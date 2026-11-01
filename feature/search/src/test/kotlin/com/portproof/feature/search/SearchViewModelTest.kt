@@ -11,6 +11,9 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
@@ -27,7 +30,7 @@ class SearchViewModelTest {
     @Test
     fun blankQueryIsIdleAndTypingSearches() = runTest {
         val handle = SavedStateHandle()
-        val vm = SearchViewModel(handle, repository)
+        val vm = SearchViewModel(handle, repository, Clock.fixed(Instant.parse("2026-11-01T10:00:00Z"), ZoneOffset.UTC))
         backgroundScope.launch { vm.uiState.collect() }
         advanceUntilIdle()
         assertEquals(SearchUiState.Idle, vm.uiState.value)

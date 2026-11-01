@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="dashboard_logo">PortProof</string>
-    <string name="dashboard_profile">Profile and settings</string>
-    <string name="dashboard_overview">Project overview</string>
-    <!-- %1$s = greeting ("Good morning"), %2$s = first name -->
-    <string name="dashboard_greeting_name">%1$s,\n%2$s</string>
-    <string name="dashboard_tile_active">Active\nprojects</string>
-    <string name="dashboard_tile_completed">Completed\nprojects</string>
-    <string name="dashboard_tile_active_a11y">Active projects: %1$d</string>
-    <string name="dashboard_tile_completed_a11y">Completed projects: %1$d of %2$d</string>
-    <string name="dashboard_search">Search a project</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_schedule">Projects by start date</string>
+    <string name="dashboard_activity">Recent activity</string>
     <string name="dashboard_new_project">New project</string>
+    <string name="dashboard_gauge_unit">completed</string>
+    <plurals name="dashboard_gauge_goal">
+        <item quantity="one">of %1$d project</item>
+        <item quantity="other">of %1$d projects</item>
+    </plurals>
+    <plurals name="dashboard_gauge_a11y">
+        <item quantity="one">%1$d of %2$d project completed</item>
+        <item quantity="other">%1$d of %2$d projects completed</item>
+    </plurals>
+    <string name="dashboard_gauge_empty">No projects yet</string>
+    <string name="dashboard_empty_title">Start your first project</string>
+    <string name="dashboard_empty_message">Tap + to record a job: customer, site, dates and status. Everything stays on this phone.</string>
 </resources>

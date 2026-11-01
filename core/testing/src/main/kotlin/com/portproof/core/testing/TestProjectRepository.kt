@@ -1,6 +1,7 @@
 package com.portproof.core.testing
 
 import com.portproof.core.data.repository.ProjectRepository
+import com.portproof.core.model.ActiveProjectLimitException
 import com.portproof.core.model.Project
 import com.portproof.core.model.ProjectDraft
 import com.portproof.core.model.ProjectId
@@ -14,10 +15,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
 
-/** In-memory [ProjectRepository] for ViewModel tests. Set [failWrites] to simulate storage errors. */
+/**
+ * In-memory [ProjectRepository] for ViewModel tests. Set [failWrites] to simulate storage errors and
+ * [activeLimit] to simulate the free plan's active-project limit.
+ */
 class TestProjectRepository(initial: List<Project> = emptyList()) : ProjectRepository {
     private val projects = MutableStateFlow(initial)
     var failWrites = false
+    var activeLimit: Int? = null
     val created = mutableListOf<ProjectDraft>()
     private var nextId = 1
 
@@ -69,20 +74,30 @@ class TestProjectRepository(initial: List<Project> = emptyList()) : ProjectRepos
 
     override suspend fun createProject(draft: ProjectDraft): ProjectId {
         checkWritable()
+        if (draft.status.isOpen) checkRoomForActive()
         val id = ProjectId("created-${nextId++}")
         created += draft
         projects.update { it + draft.toProject(id) }
         return id
     }
 
-    override suspend fun updateProject(id: ProjectId, draft: ProjectDraft): Boolean =
-        mutate(id) { draft.toProject(id).copy(createdAt = it.createdAt, archivedAt = it.archivedAt) }
+    override suspend fun updateProject(id: ProjectId, draft: ProjectDraft): Boolean {
+        if (reopens(id, draft.status)) checkRoomForActive()
+        return mutate(id) { draft.toProject(id).copy(createdAt = it.createdAt, archivedAt = it.archivedAt) }
+    }
 
-    override suspend fun setStatus(id: ProjectId, status: ProjectStatus): Boolean = mutate(id) { it.copy(status = status) }
+    override suspend fun setStatus(id: ProjectId, status: ProjectStatus): Boolean {
+        if (reopens(id, status)) checkRoomForActive()
+        return mutate(id) { it.copy(status = status) }
+    }
 
     override suspend fun archiveProject(id: ProjectId): Boolean = mutate(id) { it.copy(archivedAt = TestInstant) }
 
-    override suspend fun restoreProject(id: ProjectId): Boolean = mutate(id) { it.copy(archivedAt = null) }
+    override suspend fun restoreProject(id: ProjectId): Boolean {
+        val project = projects.value.firstOrNull { it.id == id }
+        if (project != null && project.isArchived && project.status.isOpen) checkRoomForActive()
+        return mutate(id) { it.copy(archivedAt = null) }
+    }
 
     override suspend fun deleteProject(id: ProjectId): Boolean {
         checkWritable()
@@ -96,6 +111,16 @@ class TestProjectRepository(initial: List<Project> = emptyList()) : ProjectRepos
         if (projects.value.none { it.id == id }) return false
         projects.update { all -> all.map { if (it.id == id) transform(it) else it } }
         return true
+    }
+
+    private fun reopens(id: ProjectId, status: ProjectStatus): Boolean {
+        val project = projects.value.firstOrNull { it.id == id } ?: return false
+        return !project.isArchived && !project.status.isOpen && status.isOpen
+    }
+
+    private fun checkRoomForActive() {
+        val limit = activeLimit ?: return
+        if (projects.value.count { !it.isArchived && it.status.isOpen } >= limit) throw ActiveProjectLimitException(limit)
     }
 
     private fun checkWritable() {

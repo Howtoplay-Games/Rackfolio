@@ -5,14 +5,23 @@
   encrypted (device has a screen lock). Photos and generated reports (later phases) are excluded
   from cloud backup because of size; the in-app backup (Phase 4) covers them.
   Device-to-device transfer: all app-private data.
+  Excluded from both:
+  - the app-lock file (PIN hash and attempt counter), so a restored or new device asks the user to
+    create a new PIN;
+  - the cached subscription check, so a restored device asks Google Play again instead of trusting
+    a copy (Google Play is the source of truth for PortProof Pro).
 -->
 <data-extraction-rules>
     <cloud-backup disableIfNoEncryptionCapabilities="true">
         <include domain="database" path="." />
         <include domain="file" path="datastore/" />
+        <exclude domain="file" path="datastore/app_lock.preferences_pb" />
+        <exclude domain="file" path="datastore/billing.preferences_pb" />
     </cloud-backup>
     <device-transfer>
         <include domain="database" path="." />
         <include domain="file" path="." />
+        <exclude domain="file" path="datastore/app_lock.preferences_pb" />
+        <exclude domain="file" path="datastore/billing.preferences_pb" />
     </device-transfer>
 </data-extraction-rules>

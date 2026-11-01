@@ -69,7 +69,7 @@ class InsightsScreenshotTest {
         compose.saveScreenshot(name)
     }
 
-    private val noActions = OverviewActions({}, {}, {}, {})
+    private val noActions = OverviewActions({}, {}, {})
 
     @Test
     fun overviewLight() = render("overview_light") { OverviewScreen(overview, noActions) }

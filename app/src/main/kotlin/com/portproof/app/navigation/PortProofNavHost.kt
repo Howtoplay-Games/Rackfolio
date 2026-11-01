@@ -7,23 +7,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
+import com.portproof.core.model.ProjectId
+import com.portproof.core.model.ProjectListFilter
+import com.portproof.core.model.ProjectSort
 import com.portproof.feature.dashboard.navigation.HomeRoute
 import com.portproof.feature.dashboard.navigation.homeScreen
 import com.portproof.feature.insights.navigation.activityLogScreen
 import com.portproof.feature.insights.navigation.navigateToActivityLog
-import com.portproof.feature.insights.navigation.navigateToOverview
 import com.portproof.feature.insights.navigation.overviewScreen
+import com.portproof.feature.login.navigation.navigateToSecurity
+import com.portproof.feature.login.navigation.securityScreen
 import com.portproof.feature.projects.navigation.ProjectEditorRoute
 import com.portproof.feature.projects.navigation.navigateToProjectDetail
 import com.portproof.feature.projects.navigation.navigateToProjectEditor
-import com.portproof.feature.projects.navigation.navigateToProjects
 import com.portproof.feature.projects.navigation.projectDetailScreen
 import com.portproof.feature.projects.navigation.projectEditorScreen
 import com.portproof.feature.projects.navigation.projectsScreen
-import com.portproof.feature.search.navigation.navigateToSearch
 import com.portproof.feature.search.navigation.searchScreen
-import com.portproof.feature.settings.navigation.navigateToSettings
 import com.portproof.feature.settings.navigation.settingsScreen
+import com.portproof.feature.subscription.navigation.navigateToPro
+import com.portproof.feature.subscription.navigation.proScreen
 
 /**
  * App navigation graph. Feature modules expose `NavGraphBuilder` extensions and receive navigation
@@ -32,7 +35,9 @@ import com.portproof.feature.settings.navigation.settingsScreen
 @Composable
 fun PortProofNavHost(appState: PortProofAppState, onProjectDeleted: () -> Unit, modifier: Modifier = Modifier) {
     val navController = appState.navController
-    val openProject = { id: com.portproof.core.model.ProjectId -> navController.navigateToProjectDetail(id) }
+    val openProject = { id: ProjectId -> navController.navigateToProjectDetail(id) }
+    val editProject = { id: ProjectId -> navController.navigateToProjectEditor(id) }
+    val createProject = { navController.navigateToProjectEditor() }
     NavHost(
         navController = navController,
         startDestination = HomeRoute,
@@ -43,30 +48,32 @@ fun PortProofNavHost(appState: PortProofAppState, onProjectDeleted: () -> Unit, 
         popExitTransition = { fadeOut(tween(durationMillis = 160)) },
     ) {
         homeScreen(
-            onOpenOverview = navController::navigateToOverview,
-            onCreateProject = { navController.navigateToProjectEditor() },
-            onOpenProjects = navController::navigateToProjects,
-            onOpenSettings = navController::navigateToSettings,
-            onOpenSearch = navController::navigateToSearch,
+            onOpenSchedule = { appState.openProjects(ProjectListFilter.ACTIVE, ProjectSort.START_DATE) },
+            onOpenActivity = navController::navigateToActivityLog,
+            onCreateProject = createProject,
+            onOpenProject = openProject,
+            onEditProject = editProject,
         )
-        projectsScreen(onBack = appState::navigateBack, onProjectClick = openProject, onCreateProject = { navController.navigateToProjectEditor() })
-        searchScreen(onBack = appState::navigateBack, onOpenProject = openProject)
+        projectsScreen(onProjectClick = openProject, onEditProject = editProject, onCreateProject = createProject)
+        searchScreen(onOpenProject = openProject)
         overviewScreen(
-            onBack = appState::navigateBack,
-            onOpenProjects = navController::navigateToProjects,
+            onOpenProjects = { appState.openProjects(it) },
             onOpenProject = openProject,
             onOpenActivity = navController::navigateToActivityLog,
         )
+        settingsScreen(onOpenPro = navController::navigateToPro, onOpenSecurity = navController::navigateToSecurity)
         activityLogScreen(onBack = appState::navigateBack, onOpenProject = openProject)
-        settingsScreen(onBack = appState::navigateBack)
+        securityScreen(onBack = appState::navigateBack)
+        proScreen(onClose = appState::navigateBack)
         projectDetailScreen(
             onBack = appState::navigateBack,
             onHome = appState::navigateHome,
-            onEdit = { navController.navigateToProjectEditor(it) },
+            onEdit = editProject,
             onDeleted = {
                 navController.popBackStack()
                 onProjectDeleted()
             },
+            onOpenPro = navController::navigateToPro,
         )
         projectEditorScreen(
             onClose = appState::navigateBack,
@@ -78,6 +85,7 @@ fun PortProofNavHost(appState: PortProofAppState, onProjectDeleted: () -> Unit, 
                     navController.popBackStack()
                 }
             },
+            onOpenPro = navController::navigateToPro,
         )
     }
 }
