@@ -43,23 +43,22 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun featuresOpenProjectsAndCountsThisWeeksDeadlines() = runTest {
+    fun summaryFeedsTheTilesAndTheDateComesFromTheClock() = runTest {
         projects.setProjects(
             listOf(
-                testProject(id = "a", status = ProjectStatus.IN_PROGRESS).copy(endDate = today.plusDays(3)),
-                testProject(id = "b", status = ProjectStatus.PLANNED).copy(endDate = today.minusDays(2)),
-                testProject(id = "c", status = ProjectStatus.PLANNED).copy(endDate = today.plusDays(30)),
-                testProject(id = "d", status = ProjectStatus.COMPLETED).copy(endDate = today),
-                testProject(id = "e", archived = true),
+                testProject(id = "a", status = ProjectStatus.IN_PROGRESS),
+                testProject(id = "b", status = ProjectStatus.COMPLETED),
+                testProject(id = "c", archived = true),
             ),
         )
         val vm = DashboardViewModel(projects, preferences, clock)
         backgroundScope.launch { vm.uiState.collect() }
         advanceUntilIdle()
         val state = vm.uiState.value
-        assertEquals(4, state.summary.total)
-        assertEquals(3, state.summary.active)
-        assertEquals(setOf("a", "b", "c"), state.activeProjects.map { it.id.value }.toSet())
-        assertEquals(2, state.dueThisWeek) // "a" is due in 3 days, "b" is overdue
+        assertEquals(2, state.summary.total)
+        assertEquals(1, state.summary.active)
+        assertEquals(1, state.summary.completed)
+        assertEquals(today, state.today)
+        assertEquals("Sam", state.firstName)
     }
 }

@@ -30,6 +30,8 @@ sealed interface ProjectDetailUiState {
         val project: Project,
         val activity: List<ActivityEntry>,
         val schedule: ScheduleState?,
+        val review: ProjectReview,
+        val today: LocalDate,
     ) : ProjectDetailUiState
 }
 
@@ -52,7 +54,8 @@ class ProjectDetailViewModel @Inject constructor(
         if (project == null) {
             ProjectDetailUiState.NotFound
         } else {
-            ProjectDetailUiState.Success(project, activity, scheduleStateOf(project, LocalDate.now(clock)))
+            val today = LocalDate.now(clock)
+            ProjectDetailUiState.Success(project, activity, scheduleStateOf(project, today), reviewOf(project, today), today)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ProjectDetailUiState.Loading)
 

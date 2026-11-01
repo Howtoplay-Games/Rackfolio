@@ -3,7 +3,6 @@ package com.portproof.feature.search
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -14,25 +13,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.FocusRequester
 import com.portproof.core.designsystem.component.PpEmptyState
 import com.portproof.core.designsystem.component.PpSearchField
-import com.portproof.core.designsystem.component.PpTopBar
-import com.portproof.core.ui.LocalBottomBarInset
+import com.portproof.core.designsystem.component.PpListScreen
+import com.portproof.core.designsystem.component.PpScreenHeader
 import com.portproof.core.designsystem.icon.PortProofIcons
 import com.portproof.core.designsystem.theme.PortProofTheme
 import com.portproof.core.model.ProjectId
 import com.portproof.core.ui.ProjectCard
 
 @Composable
-internal fun SearchRoute(onOpenProject: (ProjectId) -> Unit, viewModel: SearchViewModel = hiltViewModel()) {
+internal fun SearchRoute(onBack: () -> Unit, onOpenProject: (ProjectId) -> Unit, viewModel: SearchViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    SearchScreen(state, viewModel.query, viewModel::onQueryChange, onOpenProject)
+    SearchScreen(state, viewModel.query, viewModel::onQueryChange, onBack, onOpenProject)
 }
 
 @Composable
@@ -40,20 +42,24 @@ internal fun SearchScreen(
     state: SearchUiState,
     query: String,
     onQueryChange: (String) -> Unit,
+    onBack: () -> Unit,
     onOpenProject: (ProjectId) -> Unit,
 ) {
     val spacing = PortProofTheme.spacing
 
-    Column(Modifier.fillMaxSize().imePadding(), horizontalAlignment = Alignment.CenterHorizontally) {
-        PpTopBar(title = stringResource(R.string.search_title), modifier = Modifier.widthIn(max = spacing.maxContentWidth))
-        PpSearchField(
-            query = query,
-            onQueryChange = onQueryChange,
-            placeholder = stringResource(R.string.search_placeholder),
-            modifier = Modifier
-                .widthIn(max = spacing.maxContentWidth)
-                .padding(horizontal = spacing.screenGutter, vertical = spacing.sm),
-        )
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) { if (query.isEmpty()) focusRequester.requestFocus() }
+    PpListScreen(Modifier.imePadding()) {
+        Column(Modifier.padding(horizontal = spacing.screenGutter)) {
+            PpScreenHeader(stringResource(R.string.search_title), onBack = onBack)
+            PpSearchField(
+                query = query,
+                onQueryChange = onQueryChange,
+                placeholder = stringResource(R.string.search_placeholder),
+                modifier = Modifier.padding(vertical = spacing.sm),
+                fieldModifier = Modifier.focusRequester(focusRequester),
+            )
+        }
         when (state) {
             SearchUiState.Idle -> PpEmptyState(
                 icon = PortProofIcons.Search,
@@ -69,7 +75,7 @@ internal fun SearchScreen(
             } else {
                 LazyColumn(
                     modifier = Modifier.widthIn(max = spacing.maxContentWidth).fillMaxWidth(),
-                    contentPadding = PaddingValues(start = spacing.screenGutter, end = spacing.screenGutter, top = spacing.sm, bottom = LocalBottomBarInset.current + spacing.lg),
+                    contentPadding = PaddingValues(start = spacing.screenGutter, end = spacing.screenGutter, top = spacing.sm, bottom = spacing.lg),
                     verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
                 ) {
                     item(key = "count") {

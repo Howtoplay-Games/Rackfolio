@@ -1,17 +1,14 @@
 package com.portproof.feature.settings
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -25,7 +22,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -41,17 +37,16 @@ import com.portproof.core.designsystem.component.PpListRow
 import com.portproof.core.designsystem.component.PpSectionHeader
 import com.portproof.core.designsystem.component.PpSegmentedControl
 import com.portproof.core.designsystem.component.PpTextField
-import com.portproof.core.designsystem.component.PpTopBar
-import com.portproof.core.designsystem.component.horizontalBleed
+import com.portproof.core.designsystem.component.PpListScreen
+import com.portproof.core.designsystem.component.PpScreenHeader
 import com.portproof.core.designsystem.icon.PortProofIcons
 import com.portproof.core.designsystem.theme.PortProofTheme
 import com.portproof.core.model.ThemeMode
 import com.portproof.core.model.UserPreferences
-import com.portproof.core.ui.LocalBottomBarInset
 import com.portproof.core.ui.R as UiR
 
 @Composable
-internal fun SettingsRoute(viewModel: SettingsViewModel = hiltViewModel()) {
+internal fun SettingsRoute(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val ready = state as? SettingsUiState.Ready ?: return
     SettingsScreen(
@@ -59,6 +54,7 @@ internal fun SettingsRoute(viewModel: SettingsViewModel = hiltViewModel()) {
         appVersion = rememberAppVersion(),
         onUpdateProfile = viewModel::updateProfile,
         onThemeSelected = viewModel::setThemeMode,
+        onBack = onBack,
     )
 }
 
@@ -76,24 +72,24 @@ internal fun SettingsScreen(
     appVersion: String,
     onUpdateProfile: (ProfileField, String) -> Boolean,
     onThemeSelected: (ThemeMode) -> Unit,
+    onBack: () -> Unit,
 ) {
     val spacing = PortProofTheme.spacing
     var editing by rememberSaveable { mutableStateOf<ProfileField?>(null) }
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    PpListScreen {
         Column(
             Modifier
-                .widthIn(max = spacing.maxContentWidth)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = spacing.screenGutter),
             verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
         ) {
-            PpTopBar(title = stringResource(R.string.settings_title), modifier = Modifier.horizontalBleed(spacing.screenGutter))
+            PpScreenHeader(stringResource(R.string.settings_title), onBack = onBack)
             ProfileCard(preferences) { editing = it }
             AppearanceCard(preferences.themeMode, onThemeSelected)
             PrivacyCard()
             AboutCard(appVersion)
-            Spacer(Modifier.height(LocalBottomBarInset.current))
+            Spacer(Modifier.height(spacing.lg))
         }
     }
     editing?.let { field ->

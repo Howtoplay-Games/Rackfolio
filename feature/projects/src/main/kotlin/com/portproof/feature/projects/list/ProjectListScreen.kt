@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -33,25 +31,30 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import com.portproof.core.designsystem.component.PpEmptyState
-import com.portproof.core.designsystem.component.PpIconButton
+import com.portproof.core.designsystem.component.PpCircleButton
+import com.portproof.core.designsystem.component.PpCircleStyle
+import com.portproof.core.designsystem.component.PpListScreen
+import com.portproof.core.designsystem.component.PpScreenHeader
+import com.portproof.core.designsystem.component.PpStatCard
 import com.portproof.core.designsystem.component.PpPrimaryButton
 import com.portproof.core.designsystem.component.PpSearchField
-import com.portproof.core.designsystem.component.PpTopBar
-import com.portproof.core.designsystem.component.horizontalBleed
 import com.portproof.core.designsystem.icon.PortProofIcons
 import com.portproof.core.designsystem.theme.PortProofTheme
 import com.portproof.core.model.ProjectId
 import com.portproof.core.model.ProjectListFilter
 import com.portproof.core.model.ProjectSort
 import com.portproof.core.model.ProjectSummary
-import com.portproof.core.ui.LocalBottomBarInset
 import com.portproof.core.ui.ProjectCard
 import com.portproof.feature.projects.R
 import com.portproof.core.ui.R as UiR
 
 @Composable
 internal fun ProjectListRoute(
+    onBack: () -> Unit,
     onProjectClick: (ProjectId) -> Unit,
     onCreateProject: () -> Unit,
     viewModel: ProjectListViewModel = hiltViewModel(),
@@ -63,6 +66,7 @@ internal fun ProjectListRoute(
         onQueryChange = viewModel::onQueryChange,
         onFilterSelected = viewModel::onFilterSelected,
         onSortSelected = viewModel::onSortSelected,
+        onBack = onBack,
         onProjectClick = onProjectClick,
         onCreateProject = onCreateProject,
     )
@@ -75,27 +79,25 @@ internal fun ProjectListScreen(
     onQueryChange: (String) -> Unit,
     onFilterSelected: (ProjectListFilter) -> Unit,
     onSortSelected: (ProjectSort) -> Unit,
+    onBack: () -> Unit,
     onProjectClick: (ProjectId) -> Unit,
     onCreateProject: () -> Unit,
 ) {
     val spacing = PortProofTheme.spacing
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    PpListScreen {
         LazyColumn(
-            modifier = Modifier
-                .widthIn(max = spacing.maxContentWidth)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(
                 start = spacing.screenGutter,
                 end = spacing.screenGutter,
-                bottom = LocalBottomBarInset.current + spacing.lg,
+                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + spacing.lg,
             ),
-            verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
+            verticalArrangement = Arrangement.spacedBy(spacing.md),
         ) {
-            item(key = "header") { ProjectListHeader(state.summary, onCreateProject) }
+            item(key = "header") { ProjectListHeader(state.summary, onBack, onCreateProject) }
+            item(key = "stats") { StatsRow(state.summary, onFilterSelected) }
             item(key = "search") { PpSearchField(query, onQueryChange, stringResource(R.string.projects_search_placeholder)) }
-            item(key = "filters") {
-                FilterRow(state.filter, state.summary, state.sort, onFilterSelected, onSortSelected)
-            }
+            item(key = "filters") { FilterRow(state.filter, state.summary, state.sort, onFilterSelected, onSortSelected) }
             if (!state.isLoading && state.projects.isEmpty()) {
                 item(key = "empty") { EmptyProjects(state, query, onCreateProject) }
             }
@@ -107,13 +109,28 @@ internal fun ProjectListScreen(
 }
 
 @Composable
-private fun ProjectListHeader(summary: ProjectSummary, onCreateProject: () -> Unit) {
-    PpTopBar(
+private fun ProjectListHeader(summary: ProjectSummary, onBack: () -> Unit, onCreateProject: () -> Unit) {
+    PpScreenHeader(
         title = stringResource(R.string.projects_title),
+        onBack = onBack,
         subtitle = pluralStringResource(R.plurals.projects_count, summary.total, summary.total),
-        modifier = Modifier.horizontalBleed(PortProofTheme.spacing.screenGutter),
-        actions = { PpIconButton(PortProofIcons.Add, stringResource(UiR.string.ui_action_new_project), onCreateProject) },
+        actions = { PpCircleButton(PortProofIcons.Add, stringResource(UiR.string.ui_action_new_project), onCreateProject, style = PpCircleStyle.Dark) },
     )
+}
+
+/** Two big-number cards (reference third screen): active (white) and completed (periwinkle). */
+@Composable
+private fun StatsRow(summary: ProjectSummary, onFilterSelected: (ProjectListFilter) -> Unit) {
+    Row(horizontalArrangement = Arrangement.spacedBy(PortProofTheme.spacing.md)) {
+        PpStatCard(
+            stringResource(R.string.projects_stat_active), summary.active.toString(), Modifier.weight(1f),
+            onClick = { onFilterSelected(ProjectListFilter.ACTIVE) },
+        )
+        PpStatCard(
+            stringResource(R.string.projects_stat_completed), summary.completed.toString(), Modifier.weight(1f),
+            filled = true, onClick = { onFilterSelected(ProjectListFilter.COMPLETED) },
+        )
+    }
 }
 
 @Composable
@@ -129,7 +146,7 @@ private fun EmptyProjects(state: ProjectListUiState, query: String, onCreateProj
             title = stringResource(R.string.projects_empty_title),
             message = stringResource(R.string.projects_empty_message),
             action = {
-                PpPrimaryButton(stringResource(UiR.string.ui_action_new_project), onCreateProject, leadingIcon = PortProofIcons.Add)
+                PpPrimaryButton(stringResource(UiR.string.ui_action_new_project), onCreateProject)
             },
         )
         else -> PpEmptyState(
@@ -189,10 +206,11 @@ private fun FilterPill(text: String, selected: Boolean, onClick: () -> Unit) {
 private fun SortMenu(sort: ProjectSort, onSortSelected: (ProjectSort) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     Box {
-        PpIconButton(
+        PpCircleButton(
             icon = PortProofIcons.Sort,
             contentDescription = stringResource(R.string.projects_sort_label),
             onClick = { expanded = true },
+            style = PpCircleStyle.Light,
         )
         DropdownMenu(
             expanded = expanded,

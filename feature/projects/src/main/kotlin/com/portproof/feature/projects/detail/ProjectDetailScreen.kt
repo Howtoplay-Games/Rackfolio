@@ -1,22 +1,15 @@
 package com.portproof.feature.projects.detail
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -42,31 +35,28 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.portproof.core.designsystem.component.PpCard
+import com.portproof.core.designsystem.component.PpCircleButton
+import com.portproof.core.designsystem.component.PpCircleStyle
 import com.portproof.core.designsystem.component.PpConfirmDialog
-import com.portproof.core.designsystem.component.PpDivider
 import com.portproof.core.designsystem.component.PpEmptyState
-import com.portproof.core.designsystem.component.PpHatchedProgressBar
-import com.portproof.core.designsystem.component.PpIconButton
-import com.portproof.core.designsystem.component.PpLabeledValue
+import com.portproof.core.designsystem.component.PpGradientScreen
+import com.portproof.core.designsystem.component.PpPrimaryButton
+import com.portproof.core.designsystem.component.PpReviewCard
 import com.portproof.core.designsystem.component.PpSectionHeader
-import com.portproof.core.designsystem.component.PpSegmentedControl
-import com.portproof.core.designsystem.component.PpTopBar
 import com.portproof.core.designsystem.icon.PortProofIcons
 import com.portproof.core.designsystem.theme.PortProofTheme
-import com.portproof.core.model.Project
 import com.portproof.core.model.ProjectId
 import com.portproof.core.model.ProjectStatus
 import com.portproof.core.ui.ActivityRow
-import com.portproof.core.ui.ProjectStatusPill
-import com.portproof.core.ui.formatDate
+import com.portproof.core.ui.icon
 import com.portproof.core.ui.labelRes
 import com.portproof.feature.projects.R
-import com.portproof.core.designsystem.R as DsR
 import com.portproof.core.ui.R as UiR
 
 @Composable
 internal fun ProjectDetailRoute(
     onBack: () -> Unit,
+    onHome: () -> Unit,
     onEdit: (ProjectId) -> Unit,
     onDeleted: () -> Unit,
     viewModel: ProjectDetailViewModel = hiltViewModel(),
@@ -98,43 +88,46 @@ internal fun ProjectDetailRoute(
     ProjectDetailScreen(
         state = state,
         snackbarHostState = snackbarHostState,
-        onBack = onBack,
-        onEdit = { onEdit(viewModel.projectId) },
-        onStatusSelected = viewModel::setStatus,
-        onArchive = viewModel::archive,
-        onRestore = viewModel::restore,
-        onDelete = viewModel::delete,
+        actions = DetailActions(
+            onBack = onBack,
+            onHome = onHome,
+            onEdit = { onEdit(viewModel.projectId) },
+            onStatusSelected = viewModel::setStatus,
+            onArchive = viewModel::archive,
+            onRestore = viewModel::restore,
+            onDelete = viewModel::delete,
+        ),
     )
 }
 
+internal data class DetailActions(
+    val onBack: () -> Unit,
+    val onHome: () -> Unit,
+    val onEdit: () -> Unit,
+    val onStatusSelected: (ProjectStatus) -> Unit,
+    val onArchive: () -> Unit,
+    val onRestore: () -> Unit,
+    val onDelete: () -> Unit,
+)
+
 @Composable
-internal fun ProjectDetailScreen(
-    state: ProjectDetailUiState,
-    snackbarHostState: SnackbarHostState,
-    onBack: () -> Unit,
-    onEdit: () -> Unit,
-    onStatusSelected: (ProjectStatus) -> Unit,
-    onArchive: () -> Unit,
-    onRestore: () -> Unit,
-    onDelete: () -> Unit,
-) {
+internal fun ProjectDetailScreen(state: ProjectDetailUiState, snackbarHostState: SnackbarHostState, actions: DetailActions) {
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
     val spacing = PortProofTheme.spacing
-    Box(Modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-            PpTopBar(
-                title = stringResource(R.string.project_detail_title),
-                modifier = Modifier.widthIn(max = spacing.maxContentWidth),
-                navigationIcon = {
-                    PpIconButton(PortProofIcons.Back, stringResource(DsR.string.designsystem_back), onBack)
-                },
-                actions = {
-                    if (state is ProjectDetailUiState.Success) {
-                        PpIconButton(PortProofIcons.Edit, stringResource(UiR.string.ui_action_edit), onEdit)
-                        OverflowMenu(state.project.isArchived, onArchive, onRestore, onDelete = { confirmDelete = true })
-                    }
-                },
-            )
+    val success = state as? ProjectDetailUiState.Success
+    Box {
+        PpGradientScreen(
+            title = success?.project?.name ?: stringResource(R.string.project_detail_title),
+            onBack = actions.onBack,
+            onClose = actions.onHome,
+            headerCard = success?.let { { StatusCard(it, actions.onStatusSelected) } },
+            bottomBar = success?.let {
+                {
+                    PpPrimaryButton(stringResource(R.string.project_edit), actions.onEdit, Modifier.weight(1f))
+                    MoreMenu(it.project.isArchived, actions.onArchive, actions.onRestore, onDelete = { confirmDelete = true })
+                }
+            },
+        ) {
             when (state) {
                 ProjectDetailUiState.Loading -> Unit
                 ProjectDetailUiState.NotFound -> PpEmptyState(
@@ -142,25 +135,28 @@ internal fun ProjectDetailScreen(
                     title = stringResource(R.string.project_not_found_title),
                     message = stringResource(R.string.project_not_found_message),
                 )
-                is ProjectDetailUiState.Success -> DetailContent(state, onStatusSelected, onRestore)
+                is ProjectDetailUiState.Success -> Column(
+                    Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = spacing.screenGutter, vertical = spacing.md),
+                    verticalArrangement = Arrangement.spacedBy(spacing.md),
+                ) {
+                    ProjectRecord(state)
+                    ActivityCard(state)
+                }
             }
         }
-        SnackbarHost(
-            snackbarHostState,
-            Modifier
-                .align(Alignment.BottomCenter)
-                .windowInsetsPadding(WindowInsets.navigationBars),
-        )
+        SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter).padding(bottom = 96.dp))
     }
-    if (confirmDelete && state is ProjectDetailUiState.Success) {
+    if (confirmDelete && success != null) {
         PpConfirmDialog(
             title = stringResource(R.string.project_delete_title),
-            message = stringResource(R.string.project_delete_message, state.project.name),
+            message = stringResource(R.string.project_delete_message, success.project.name),
             confirmLabel = stringResource(R.string.project_delete_confirm),
             dismissLabel = stringResource(UiR.string.ui_action_cancel),
             onConfirm = {
                 confirmDelete = false
-                onDelete()
+                actions.onDelete()
             },
             onDismiss = { confirmDelete = false },
             destructive = true,
@@ -168,11 +164,52 @@ internal fun ProjectDetailScreen(
     }
 }
 
+/** Status card on the header: tap to change status; the bar shows schedule (or status) progress. */
 @Composable
-private fun OverflowMenu(isArchived: Boolean, onArchive: () -> Unit, onRestore: () -> Unit, onDelete: () -> Unit) {
+private fun StatusCard(state: ProjectDetailUiState.Success, onStatusSelected: (ProjectStatus) -> Unit) {
+    val project = state.project
+    var expanded by remember { mutableStateOf(false) }
+    val scheduleLabel = when (val s = state.schedule) {
+        is ScheduleState.Upcoming -> pluralStringResource(R.plurals.project_schedule_not_started, s.daysUntilStart.toInt(), s.daysUntilStart)
+        is ScheduleState.Running -> stringResource(R.string.project_schedule_progress, s.day, s.totalDays)
+        is ScheduleState.Overdue -> pluralStringResource(R.plurals.project_schedule_overdue, s.daysOver.toInt(), s.daysOver)
+        ScheduleState.Done, null -> null
+    }
+    val issues = state.review.issueCount
+    Box {
+        PpReviewCard(
+            icon = project.status.icon,
+            title = listOfNotNull(stringResource(project.status.labelRes), scheduleLabel).joinToString(" · "),
+            caption = if (issues == 0) {
+                stringResource(R.string.project_review_complete)
+            } else {
+                pluralStringResource(R.plurals.project_review_issues, issues, issues)
+            },
+            segments = 5,
+            filled = progressSegments(project, state.schedule),
+            onClick = if (project.isArchived) null else ({ expanded = true }),
+            trailing = if (project.isArchived) {
+                null
+            } else {
+                { Icon(PortProofIcons.ChevronDown, stringResource(R.string.project_change_status), tint = PortProofTheme.colors.textSecondary) }
+            },
+        )
+        DropdownMenu(expanded, onDismissRequest = { expanded = false }, containerColor = PortProofTheme.colors.surface) {
+            ProjectStatus.entries.forEach { status ->
+                MenuItem(stringResource(status.labelRes), status.icon, checked = status == project.status) {
+                    expanded = false
+                    onStatusSelected(status)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MoreMenu(isArchived: Boolean, onArchive: () -> Unit, onRestore: () -> Unit, onDelete: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     Box {
-        PpIconButton(PortProofIcons.MoreVertical, stringResource(UiR.string.ui_action_more), { expanded = true })
+        PpCircleButton(PortProofIcons.Ellipsis, stringResource(UiR.string.ui_action_more), { expanded = true }, style = PpCircleStyle.Accent, visualSize = 56.dp)
         DropdownMenu(expanded, onDismissRequest = { expanded = false }, containerColor = PortProofTheme.colors.surface) {
             MenuItem(
                 text = stringResource(if (isArchived) UiR.string.ui_action_restore else UiR.string.ui_action_archive),
@@ -190,143 +227,14 @@ private fun OverflowMenu(isArchived: Boolean, onArchive: () -> Unit, onRestore: 
 }
 
 @Composable
-private fun MenuItem(text: String, icon: ImageVector, destructive: Boolean = false, onClick: () -> Unit) {
+private fun MenuItem(text: String, icon: ImageVector, destructive: Boolean = false, checked: Boolean = false, onClick: () -> Unit) {
     val color = if (destructive) PortProofTheme.colors.dangerText else PortProofTheme.colors.textPrimary
     DropdownMenuItem(
         text = { Text(text, style = MaterialTheme.typography.bodyMedium, color = color) },
         leadingIcon = { Icon(icon, null, tint = color, modifier = Modifier.size(18.dp)) },
+        trailingIcon = if (checked) ({ Icon(PortProofIcons.Check, null, tint = PortProofTheme.colors.accentStrong) }) else null,
         onClick = onClick,
     )
-}
-
-@Composable
-private fun DetailContent(
-    state: ProjectDetailUiState.Success,
-    onStatusSelected: (ProjectStatus) -> Unit,
-    onRestore: () -> Unit,
-) {
-    val spacing = PortProofTheme.spacing
-    val project = state.project
-    LazyColumn(
-        modifier = Modifier
-            .widthIn(max = spacing.maxContentWidth)
-            .fillMaxWidth(),
-        contentPadding = PaddingValues(start = spacing.screenGutter, end = spacing.screenGutter, bottom = 96.dp),
-        verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
-    ) {
-        if (project.isArchived) item(key = "archived") { ArchivedBanner(onRestore) }
-        item(key = "hero") { HeroCard(project) }
-        item(key = "status") { StatusCard(project, onStatusSelected) }
-        item(key = "schedule") { ScheduleCard(project, state.schedule) }
-        project.description?.let { description -> item(key = "description") { DescriptionCard(description) } }
-        item(key = "activity") { ActivityCard(state) }
-    }
-}
-
-@Composable
-private fun ArchivedBanner(onRestore: () -> Unit) {
-    val colors = PortProofTheme.colors
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(colors.warningContainer, PortProofTheme.shapes.card)
-            .padding(start = 14.dp, end = 6.dp, top = 6.dp, bottom = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        Icon(PortProofIcons.Archive, null, tint = colors.warningText, modifier = Modifier.size(18.dp))
-        Text(
-            stringResource(R.string.project_archived_banner),
-            style = MaterialTheme.typography.bodySmall,
-            color = colors.warningText,
-            modifier = Modifier.weight(1f).padding(vertical = 6.dp),
-        )
-        androidx.compose.material3.TextButton(onClick = onRestore) {
-            Text(stringResource(UiR.string.ui_action_restore), color = colors.warningText, style = MaterialTheme.typography.labelLarge)
-        }
-    }
-}
-
-@Composable
-private fun HeroCard(project: Project) {
-    val colors = PortProofTheme.colors
-    val notSet = stringResource(R.string.project_value_not_set)
-    PpCard {
-        Row(verticalAlignment = Alignment.Top) {
-            Column(Modifier.weight(1f)) {
-                Text(project.name, style = MaterialTheme.typography.titleLarge, color = colors.textPrimary)
-                project.reference?.let {
-                    Text("# $it", style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
-                }
-            }
-            Spacer(Modifier.size(8.dp))
-            ProjectStatusPill(project)
-        }
-        Spacer(Modifier.height(16.dp))
-        PpDivider()
-        Spacer(Modifier.height(12.dp))
-        InfoLine(PortProofIcons.Building, stringResource(R.string.project_label_customer), project.customerName ?: notSet)
-        InfoLine(PortProofIcons.MapPin, stringResource(R.string.project_label_site), project.siteName ?: notSet)
-        project.siteAddress?.let { InfoLine(PortProofIcons.FileText, stringResource(R.string.project_label_address), it) }
-    }
-}
-
-@Composable
-private fun InfoLine(icon: ImageVector, label: String, value: String) {
-    Row(Modifier.padding(vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Icon(icon, null, tint = PortProofTheme.colors.textMuted, modifier = Modifier.size(18.dp).padding(top = 2.dp))
-        PpLabeledValue(label, value, Modifier.weight(1f))
-    }
-}
-
-@Composable
-private fun StatusCard(project: Project, onStatusSelected: (ProjectStatus) -> Unit) {
-    PpCard {
-        PpSectionHeader(stringResource(R.string.project_section_status), style = MaterialTheme.typography.titleSmall)
-        PpSegmentedControl(
-            options = ProjectStatus.entries,
-            selected = project.status,
-            onSelect = onStatusSelected,
-            label = { stringResource(it.labelRes) },
-            enabled = !project.isArchived,
-        )
-    }
-}
-
-@Composable
-private fun ScheduleCard(project: Project, schedule: ScheduleState?) {
-    val colors = PortProofTheme.colors
-    val notSet = stringResource(R.string.project_value_not_set)
-    PpCard {
-        PpSectionHeader(stringResource(R.string.project_section_schedule), style = MaterialTheme.typography.titleSmall)
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            PpLabeledValue(stringResource(R.string.project_label_start), project.startDate?.let { formatDate(it) } ?: notSet, Modifier.weight(1f))
-            PpLabeledValue(stringResource(R.string.project_label_end), project.endDate?.let { formatDate(it) } ?: notSet, Modifier.weight(1f))
-        }
-        if (schedule != null) {
-            Spacer(Modifier.height(14.dp))
-            val (label, color) = when (schedule) {
-                is ScheduleState.Upcoming ->
-                    pluralStringResource(R.plurals.project_schedule_not_started, schedule.daysUntilStart.toInt(), schedule.daysUntilStart) to colors.accent
-                is ScheduleState.Running ->
-                    stringResource(R.string.project_schedule_progress, schedule.day, schedule.totalDays) to colors.accent
-                is ScheduleState.Overdue ->
-                    pluralStringResource(R.plurals.project_schedule_overdue, schedule.daysOver.toInt(), schedule.daysOver) to colors.danger
-                ScheduleState.Done -> stringResource(R.string.project_schedule_done) to colors.success
-            }
-            Text(label, style = MaterialTheme.typography.labelMedium, color = colors.textSecondary)
-            Spacer(Modifier.height(8.dp))
-            PpHatchedProgressBar(progress = schedule.progress, color = color)
-        }
-    }
-}
-
-@Composable
-private fun DescriptionCard(description: String) {
-    PpCard {
-        PpSectionHeader(stringResource(R.string.project_section_description), style = MaterialTheme.typography.titleSmall)
-        Text(description, style = MaterialTheme.typography.bodyMedium, color = PortProofTheme.colors.textPrimary)
-    }
 }
 
 @Composable
@@ -334,12 +242,8 @@ private fun ActivityCard(state: ProjectDetailUiState.Success) {
     PpCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
         PpSectionHeader(stringResource(R.string.project_section_activity), style = MaterialTheme.typography.titleSmall)
         if (state.activity.isEmpty()) {
-            Text(
-                stringResource(R.string.project_no_activity),
-                style = MaterialTheme.typography.bodySmall,
-                color = PortProofTheme.colors.textSecondary,
-                modifier = Modifier.padding(bottom = 12.dp),
-            )
+            Text(stringResource(R.string.project_no_activity), style = MaterialTheme.typography.bodySmall, color = PortProofTheme.colors.textSecondary)
+            Spacer(Modifier.height(8.dp))
         }
         state.activity.forEach { entry -> ActivityRow(entry, showProject = false) }
     }
