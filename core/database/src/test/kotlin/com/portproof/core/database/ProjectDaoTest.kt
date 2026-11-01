@@ -143,4 +143,17 @@ class ProjectDaoTest {
         projectId = projectId, entityType = "PROJECT", entityId = projectId, action = "CREATED",
         label = null, detail = null, occurredAt = 1,
     )
+
+    @Test
+    fun deadlinesIncludeOverdueOpenProjectsOnly() = runTest {
+        val dao = db.projectDao()
+        dao.insert(project("overdue", status = "IN_PROGRESS").copy(endDateEpochDay = 90))
+        dao.insert(project("soon", status = "PLANNED").copy(endDateEpochDay = 105))
+        dao.insert(project("later", status = "PLANNED").copy(endDateEpochDay = 200))
+        dao.insert(project("done", status = "COMPLETED").copy(endDateEpochDay = 95))
+        dao.insert(project("archived", archivedAt = 1).copy(endDateEpochDay = 95))
+        dao.insert(project("undated", status = "IN_PROGRESS"))
+
+        assertEquals(listOf("overdue", "soon"), dao.observeDeadlines(untilEpochDay = 107, limit = 10).first().map { it.id })
+    }
 }

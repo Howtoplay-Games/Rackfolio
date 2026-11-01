@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import java.time.LocalDate
 
 /** In-memory [ProjectRepository] for ViewModel tests. Set [failWrites] to simulate storage errors. */
 class TestProjectRepository(initial: List<Project> = emptyList()) : ProjectRepository {
@@ -56,6 +57,12 @@ class TestProjectRepository(initial: List<Project> = emptyList()) : ProjectRepos
 
     override fun searchProjects(query: String, limit: Int): Flow<List<Project>> = projects.map { all ->
         if (query.isBlank()) emptyList() else all.filter { it.name.contains(query.trim(), ignoreCase = true) }.take(limit)
+    }
+
+    override fun observeUpcomingDeadlines(until: LocalDate, limit: Int): Flow<List<Project>> = projects.map { all ->
+        all.filter { !it.isArchived && it.status.isOpen && it.endDate != null && !it.endDate!!.isAfter(until) }
+            .sortedBy { it.endDate }
+            .take(limit)
     }
 
     override suspend fun getProject(id: ProjectId): Project? = projects.value.firstOrNull { it.id == id }

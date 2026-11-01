@@ -147,4 +147,35 @@ class OfflineFirstProjectRepositoryTest {
         assertEquals(1, trend.total)
         assertEquals(1, trend.previousPeriodTotal)
     }
+
+    @Test
+    fun insightsCountEntriesPerLocalHourWithinThePeriod() = runTest {
+        clock.now = Instant.parse("2026-11-01T08:15:00Z")
+        val id = projects.createProject(draft(name = "A"))
+        clock.now = Instant.parse("2026-11-01T08:45:00Z")
+        projects.setStatus(id, ProjectStatus.IN_PROGRESS)
+        clock.now = Instant.parse("2026-10-30T14:05:00Z")
+        projects.createProject(draft(name = "B"))
+        clock.now = Instant.parse("2026-10-20T14:05:00Z") // outside the 7-day period
+        projects.createProject(draft(name = "C"))
+        clock.now = Instant.parse("2026-11-01T18:00:00Z")
+
+        val insights = activity.observeActivityInsights(days = 7).first()
+        assertEquals(2, insights.byHour[8])
+        assertEquals(1, insights.byHour[14])
+        assertEquals(3, insights.byHour.sum())
+        assertEquals(2, insights.today)
+        assertEquals(setOf(8, 14), insights.peakHours())
+    }
+
+    @Test
+    fun upcomingDeadlinesExcludeCompletedAndLaterProjects() = runTest {
+        val due = (ProjectValidator.validate(
+            ProjectInput(name = "Due", status = ProjectStatus.IN_PROGRESS, endDate = LocalDate.of(2026, 11, 3)),
+        ) as ProjectValidationResult.Valid).draft
+        val later = (ProjectValidator.validate(ProjectInput(name = "Later", endDate = LocalDate.of(2026, 12, 1))) as ProjectValidationResult.Valid).draft
+        projects.createProject(due)
+        projects.createProject(later)
+        assertEquals(listOf("Due"), projects.observeUpcomingDeadlines(LocalDate.of(2026, 11, 7), 10).first().map { it.name })
+    }
 }

@@ -52,6 +52,9 @@ internal class OfflineFirstProjectRepository @Inject constructor(
         return projectDao.search(pattern, limit).map { rows -> rows.map(ProjectEntity::asExternalModel) }
     }
 
+    override fun observeUpcomingDeadlines(until: LocalDate, limit: Int): Flow<List<Project>> =
+        projectDao.observeDeadlines(until.toEpochDay(), limit).map { rows -> rows.map(ProjectEntity::asExternalModel) }
+
     override suspend fun getProject(id: ProjectId): Project? = projectDao.getById(id.value)?.asExternalModel()
 
     override suspend fun createProject(draft: ProjectDraft): ProjectId {
