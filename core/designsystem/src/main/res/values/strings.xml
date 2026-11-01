@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="designsystem_clear_search">Clear search</string>
+    <string name="designsystem_back">Back</string>
+    <string name="designsystem_close">Close</string>
+    <string name="designsystem_navigation">Main navigation</string>
+</resources>
