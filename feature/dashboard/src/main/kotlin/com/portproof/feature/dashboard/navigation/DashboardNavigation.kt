@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.portproof.core.model.ProjectId
 import com.portproof.core.model.ProjectListFilter
+import com.portproof.feature.dashboard.DashboardActions
 import com.portproof.feature.dashboard.DashboardRoute
 import kotlinx.serialization.Serializable
 
@@ -12,19 +13,16 @@ import kotlinx.serialization.Serializable
 data object HomeRoute
 
 fun NavGraphBuilder.homeScreen(
-    onSearch: () -> Unit,
+    onOpenActivity: () -> Unit,
     onCreateProject: () -> Unit,
     onOpenProject: (ProjectId) -> Unit,
     onOpenProjects: (ProjectListFilter) -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenInsight: () -> Unit,
 ) {
     composable<HomeRoute> {
         DashboardRoute(
-            onSearch = onSearch,
-            onCreateProject = onCreateProject,
-            onOpenProject = onOpenProject,
-            onOpenProjects = onOpenProjects,
-            onOpenSettings = onOpenSettings,
+            DashboardActions(onOpenActivity, onCreateProject, onOpenProject, onOpenProjects, onOpenSettings, onOpenInsight),
         )
     }
 }

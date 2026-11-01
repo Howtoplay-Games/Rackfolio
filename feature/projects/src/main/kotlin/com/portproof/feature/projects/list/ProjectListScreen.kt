@@ -3,17 +3,13 @@ package com.portproof.feature.projects.list
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -34,16 +30,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.portproof.core.designsystem.component.PpChipButton
 import com.portproof.core.designsystem.component.PpEmptyState
 import com.portproof.core.designsystem.component.PpIconButton
 import com.portproof.core.designsystem.component.PpPrimaryButton
 import com.portproof.core.designsystem.component.PpSearchField
+import com.portproof.core.designsystem.component.PpTopBar
+import com.portproof.core.designsystem.component.horizontalBleed
 import com.portproof.core.designsystem.icon.PortProofIcons
 import com.portproof.core.designsystem.theme.PortProofTheme
 import com.portproof.core.model.ProjectId
@@ -113,28 +108,12 @@ internal fun ProjectListScreen(
 
 @Composable
 private fun ProjectListHeader(summary: ProjectSummary, onCreateProject: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(top = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text(
-                stringResource(R.string.projects_title),
-                style = MaterialTheme.typography.headlineSmall,
-                color = PortProofTheme.colors.textPrimary,
-                modifier = Modifier.semantics { heading() },
-            )
-            Text(
-                pluralStringResource(R.plurals.projects_count, summary.total, summary.total),
-                style = MaterialTheme.typography.bodySmall,
-                color = PortProofTheme.colors.textSecondary,
-            )
-        }
-        PpChipButton(stringResource(R.string.projects_new), onCreateProject, leadingIcon = PortProofIcons.Add)
-    }
+    PpTopBar(
+        title = stringResource(R.string.projects_title),
+        subtitle = pluralStringResource(R.plurals.projects_count, summary.total, summary.total),
+        modifier = Modifier.horizontalBleed(PortProofTheme.spacing.screenGutter),
+        actions = { PpIconButton(PortProofIcons.Add, stringResource(UiR.string.ui_action_new_project), onCreateProject) },
+    )
 }
 
 @Composable

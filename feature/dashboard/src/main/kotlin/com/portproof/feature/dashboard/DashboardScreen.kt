@@ -22,54 +22,59 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.portproof.core.designsystem.component.PpAvatarButton
+import com.portproof.core.designsystem.component.PpEmoji
+import com.portproof.core.designsystem.component.PpFeatureCard
+import com.portproof.core.designsystem.component.PpHeroProgressCard
 import com.portproof.core.designsystem.component.PpIconButton
-import com.portproof.core.designsystem.component.PpIconButtonShape
+import com.portproof.core.designsystem.component.PpIllustration
+import com.portproof.core.designsystem.component.PpMetricCard
+import com.portproof.core.designsystem.component.PpSectionHeader
+import com.portproof.core.designsystem.component.PpTextLink
 import com.portproof.core.designsystem.component.horizontalBleed
 import com.portproof.core.designsystem.icon.PortProofIcons
 import com.portproof.core.designsystem.theme.PortProofTheme
 import com.portproof.core.model.ProjectId
 import com.portproof.core.model.ProjectListFilter
 import com.portproof.core.ui.LocalBottomBarInset
-import com.portproof.core.ui.currentLocale
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
+import com.portproof.core.ui.greetingRes
+import com.portproof.core.ui.illustration
+import com.portproof.core.ui.labelRes
+import com.portproof.core.ui.pastelFor
+import com.portproof.core.ui.R as UiR
 
 internal data class DashboardActions(
-    val onSearch: () -> Unit,
+    val onOpenActivity: () -> Unit,
     val onCreateProject: () -> Unit,
     val onOpenProject: (ProjectId) -> Unit,
     val onOpenProjects: (ProjectListFilter) -> Unit,
     val onOpenSettings: () -> Unit,
+    val onOpenInsight: () -> Unit,
 )
 
 @Composable
 internal fun DashboardRoute(
-    onSearch: () -> Unit,
-    onCreateProject: () -> Unit,
-    onOpenProject: (ProjectId) -> Unit,
-    onOpenProjects: (ProjectListFilter) -> Unit,
-    onOpenSettings: () -> Unit,
+    actions: DashboardActions,
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    DashboardScreen(state, DashboardActions(onSearch, onCreateProject, onOpenProject, onOpenProjects, onOpenSettings))
+    DashboardScreen(state, actions)
 }
 
-/** Two columns from 840dp (tablets, unfolded foldables); a single column below. */
+/** Layout of the reference home screen. From 840dp the feature cards move into a second column. */
 @Composable
 internal fun DashboardScreen(state: DashboardUiState, actions: DashboardActions) {
     val spacing = PortProofTheme.spacing
     BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         val twoColumns = maxWidth >= 840.dp
-        val scrollableStats = maxWidth < 600.dp
         Column(
             modifier = Modifier
                 .widthIn(max = if (twoColumns) 1200.dp else spacing.maxContentWidth)
@@ -77,86 +82,118 @@ internal fun DashboardScreen(state: DashboardUiState, actions: DashboardActions)
                 .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(horizontal = spacing.screenGutter),
-            verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
         ) {
-            DashboardHeader(state, actions)
+            Header(state, actions)
             if (state.isLoading) return@Column
-            if (state.summary.isEmpty) {
-                WelcomeCard(actions.onCreateProject)
-                QuickActionsCard(actions)
-            } else if (twoColumns) {
-                Row(horizontalArrangement = Arrangement.spacedBy(spacing.lg)) {
-                    Column(Modifier.weight(1.1f), verticalArrangement = Arrangement.spacedBy(spacing.cardGap)) {
-                        OverviewSection(state, actions, scrollable = false)
-                        StatusCard(state.summary) { actions.onOpenProjects(ProjectListFilter.ALL) }
-                        state.trend?.let { ActivityTrendCard(it) }
-                    }
-                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacing.cardGap)) {
-                        QuickActionsCard(actions)
-                        RecentSections(state, actions)
-                    }
+            Spacer(Modifier.height(20.dp))
+            if (twoColumns) {
+                Row(horizontalArrangement = Arrangement.spacedBy(spacing.xxl)) {
+                    Column(Modifier.weight(1f)) { ProgressAndOverview(state, actions) }
+                    Column(Modifier.weight(1f)) { ActiveProjects(state, actions) }
                 }
             } else {
-                OverviewSection(state, actions, scrollable = scrollableStats)
-                QuickActionsCard(actions)
-                StatusCard(state.summary) { actions.onOpenProjects(ProjectListFilter.ALL) }
-                state.trend?.let { ActivityTrendCard(it) }
-                RecentSections(state, actions)
+                ProgressAndOverview(state, actions)
+                Spacer(Modifier.height(spacing.sectionGap))
+                ActiveProjects(state, actions)
             }
-            Spacer(Modifier.height(LocalBottomBarInset.current))
+            Spacer(Modifier.height(LocalBottomBarInset.current + spacing.lg))
         }
     }
 }
 
 @Composable
-private fun DashboardHeader(state: DashboardUiState, actions: DashboardActions) {
+private fun Header(state: DashboardUiState, actions: DashboardActions) {
     val colors = PortProofTheme.colors
-    val today = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(currentLocale()).format(LocalDate.now())
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            // 48dp touch targets draw 40dp visuals; bleeding 4dp aligns them with the card edges.
             .horizontalBleed(4.dp)
-            .padding(top = 8.dp),
+            .padding(top = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        PpIconButton(PortProofIcons.Search, stringResource(R.string.dashboard_search), actions.onSearch, modifier = Modifier.padding(end = 4.dp))
-        Column(Modifier.weight(1f)) {
+        PpAvatarButton(state.technicianName, stringResource(R.string.dashboard_profile), actions.onOpenSettings)
+        Column(Modifier.weight(1f).padding(start = 8.dp)) {
+            Text(stringResource(greetingRes()), style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
             Text(
-                text = if (state.firstName.isEmpty()) {
-                    stringResource(R.string.dashboard_hello)
-                } else {
-                    stringResource(R.string.dashboard_hello_name, state.firstName)
-                },
-                style = MaterialTheme.typography.titleMedium,
+                // Nothing until loaded, so the fallback never flashes before the stored name.
+                if (state.isLoading) "" else state.technicianName.ifEmpty { stringResource(R.string.dashboard_name_fallback) },
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Medium),
                 color = colors.textPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.semantics { heading() },
             )
-            Text(today, style = MaterialTheme.typography.bodySmall, color = colors.textSecondary, maxLines = 1)
         }
-        PpIconButton(
-            icon = PortProofIcons.Add,
-            contentDescription = stringResource(R.string.dashboard_action_new),
-            onClick = actions.onCreateProject,
-            shape = PpIconButtonShape.Circle,
-            filled = true,
+        PpIconButton(PortProofIcons.Bell, stringResource(R.string.dashboard_activity), actions.onOpenActivity)
+    }
+}
+
+@Composable
+private fun ColumnScope.ProgressAndOverview(state: DashboardUiState, actions: DashboardActions) {
+    val summary = state.summary
+    val percent = (summary.completionRatio * 100).toInt()
+    PpHeroProgressCard(
+        title = stringResource(R.string.dashboard_progress_title),
+        subtitle = pluralStringResource(R.plurals.dashboard_progress_left, summary.active, summary.active),
+        progress = summary.completionRatio,
+        progressLabel = "$percent%",
+        accessibilityLabel = pluralStringResource(R.plurals.dashboard_progress_a11y, summary.active, percent, summary.active),
+        onClick = { actions.onOpenProjects(ProjectListFilter.ALL) },
+    )
+    Spacer(Modifier.height(PortProofTheme.spacing.sectionGap))
+    PpSectionHeader(
+        title = stringResource(R.string.dashboard_overview),
+        action = { PpTextLink(stringResource(UiR.string.ui_see_details), actions.onOpenInsight) },
+    )
+    Spacer(Modifier.height(8.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(PortProofTheme.spacing.cardGap)) {
+        PpMetricCard(
+            label = stringResource(R.string.dashboard_active_projects_metric),
+            emoji = PpEmoji.Tools,
+            value = summary.active.toString(),
+            unit = pluralStringResource(R.plurals.dashboard_unit_projects, summary.active),
+            onClick = { actions.onOpenProjects(ProjectListFilter.ACTIVE) },
+            modifier = Modifier.weight(1f),
         )
-        PpAvatarButton(
-            name = state.technicianName,
-            contentDescription = stringResource(R.string.dashboard_profile),
-            onClick = actions.onOpenSettings,
+        PpMetricCard(
+            label = stringResource(R.string.dashboard_due_this_week),
+            emoji = PpEmoji.Hourglass,
+            value = state.dueThisWeek.toString(),
+            unit = pluralStringResource(R.plurals.dashboard_unit_projects, state.dueThisWeek),
+            onClick = actions.onOpenInsight,
+            modifier = Modifier.weight(1f),
         )
     }
 }
 
 @Composable
-internal fun SectionTitle(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text,
-        style = MaterialTheme.typography.titleMedium,
-        color = PortProofTheme.colors.textPrimary,
-        modifier = modifier.semantics { heading() },
+private fun ColumnScope.ActiveProjects(state: DashboardUiState, actions: DashboardActions) {
+    PpSectionHeader(
+        title = stringResource(R.string.dashboard_active_projects),
+        action = { PpTextLink(stringResource(UiR.string.ui_see_details), { actions.onOpenProjects(ProjectListFilter.ACTIVE) }) },
     )
+    Spacer(Modifier.height(8.dp))
+    Column(verticalArrangement = Arrangement.spacedBy(PortProofTheme.spacing.cardGap)) {
+        state.activeProjects.forEachIndexed { index, project ->
+            val details = listOfNotNull(project.customerName, project.siteName).joinToString(" · ")
+            PpFeatureCard(
+                title = project.name,
+                caption = details.ifEmpty { stringResource(project.status.labelRes) },
+                buttonLabel = stringResource(R.string.dashboard_open_project),
+                illustration = project.illustration(),
+                containerColor = pastelFor(index),
+                onClick = { actions.onOpenProject(project.id) },
+            )
+        }
+        PpFeatureCard(
+            title = stringResource(
+                if (state.summary.isEmpty) R.string.dashboard_first_project_title else R.string.dashboard_new_project_title,
+            ),
+            caption = stringResource(R.string.dashboard_new_project_caption),
+            buttonLabel = stringResource(R.string.dashboard_new_project_action),
+            illustration = PpIllustration.Construction,
+            containerColor = pastelFor(state.activeProjects.size),
+            onClick = actions.onCreateProject,
+        )
+    }
 }
-
-internal typealias CardContent = @Composable ColumnScope.() -> Unit

@@ -6,15 +6,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -34,8 +31,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -46,6 +41,8 @@ import com.portproof.core.designsystem.component.PpListRow
 import com.portproof.core.designsystem.component.PpSectionHeader
 import com.portproof.core.designsystem.component.PpSegmentedControl
 import com.portproof.core.designsystem.component.PpTextField
+import com.portproof.core.designsystem.component.PpTopBar
+import com.portproof.core.designsystem.component.horizontalBleed
 import com.portproof.core.designsystem.icon.PortProofIcons
 import com.portproof.core.designsystem.theme.PortProofTheme
 import com.portproof.core.model.ThemeMode
@@ -88,16 +85,10 @@ internal fun SettingsScreen(
                 .widthIn(max = spacing.maxContentWidth)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(horizontal = spacing.screenGutter),
             verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
         ) {
-            Text(
-                stringResource(R.string.settings_title),
-                style = MaterialTheme.typography.headlineSmall,
-                color = PortProofTheme.colors.textPrimary,
-                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp).semantics { heading() },
-            )
+            PpTopBar(title = stringResource(R.string.settings_title), modifier = Modifier.horizontalBleed(spacing.screenGutter))
             ProfileCard(preferences) { editing = it }
             AppearanceCard(preferences.themeMode, onThemeSelected)
             PrivacyCard()

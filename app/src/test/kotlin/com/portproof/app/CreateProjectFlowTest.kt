@@ -36,10 +36,10 @@ class CreateProjectFlowTest {
 
     @Test
     fun createProjectFromDashboardThenFindItEverywhere() {
-        waitForText("Welcome to PortProof")
+        waitForText("Create Your First Project")
         compose.saveScreenshot("01_dashboard_first_run")
 
-        compose.onNodeWithText("Create your first project").performClick()
+        compose.onNodeWithText("Create Your First Project").performClick()
         waitForText("New project")
 
         // Saving without a name is blocked with an inline error.
@@ -57,8 +57,8 @@ class CreateProjectFlowTest {
         compose.saveScreenshot("03_project_detail")
 
         compose.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
-        waitForText("Recent projects")
-        // Listed under "Recent projects" and named again in the activity feed.
+        waitForText("Active Projects")
+        // Featured under "Active Projects" on the dashboard.
         compose.onAllNodesWithText("Warehouse CCTV upgrade").onFirst().performScrollTo().assertIsDisplayed()
         compose.saveScreenshot("04_dashboard_with_project")
 
@@ -70,8 +70,8 @@ class CreateProjectFlowTest {
 
     @Test
     fun leavingEditorWithUnsavedChangesAsksBeforeDiscarding() {
-        waitForText("Welcome to PortProof")
-        compose.onNodeWithText("Create your first project").performClick()
+        waitForText("Create Your First Project")
+        compose.onNodeWithText("Create Your First Project").performClick()
         waitForText("New project")
         compose.onNode(hasText("Project name *") and hasSetTextAction()).performTextInput("Plant room BMS")
         compose.waitForIdle() // let the back handler observe the unsaved change
@@ -82,5 +82,34 @@ class CreateProjectFlowTest {
 
         compose.onNodeWithText("Keep editing").performClick()
         compose.onNodeWithText("Plant room BMS").assertIsDisplayed()
+    }
+
+    @Test
+    fun everyHomeEntryPointAndTabOpensItsScreen() {
+        waitForText("Create Your First Project")
+
+        compose.onNodeWithContentDescription("Activity").performClick()
+        waitForText("No activity yet")
+        compose.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
+        waitForText("Overview")
+
+        compose.onAllNodesWithText("See Details").onFirst().performClick()
+        waitForText("Activity by Hour")
+        compose.onNodeWithText("Upcoming Deadlines").assertIsDisplayed()
+        compose.saveScreenshot("07_insight_empty")
+        compose.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
+        waitForText("Overview")
+
+        compose.onNodeWithContentDescription("Insights").performClick()
+        waitForText("Total Projects") // content, not just the title (the title also shows while loading)
+        compose.saveScreenshot("08_metrics_empty")
+
+        compose.onNodeWithContentDescription("Search").performClick()
+        waitForText("Find a project")
+        compose.saveScreenshot("09_search")
+
+        // Back from a tab returns to Home before leaving the app.
+        compose.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
+        waitForText("Overview")
     }
 }
