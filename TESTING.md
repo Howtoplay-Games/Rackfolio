@@ -9,7 +9,7 @@
 | Repositories | Robolectric + in-memory Room, temp-file DataStore | `core:data` | Transactions, activity logging, timestamps, not-found handling, time-zone bucketing |
 | ViewModels | JUnit + coroutines-test + fakes from `core:testing` | `feature:*` | UI state, validation flow, error handling, process-death restore |
 | App flows | Robolectric + Compose UI test against the real app (Hilt, Room, DataStore) | `app` | End-to-end user journeys, navigation and back handling |
-| Rendering | Robolectric native graphics | `app`, `feature:dashboard` | PNG renders for design review (`build/screenshots`, copied to `docs/screenshots`) |
+| Rendering | Robolectric native graphics | `app`, `feature:dashboard`, `feature:insights` | PNG renders for design review (`build/screenshots`, copied to `docs/screenshots`) |
 
 Fakes (`TestProjectRepository`, `TestActivityRepository`, `TestUserPreferencesRepository`) live in
 `core:testing`; `TestProjectRepository.failWrites` simulates storage failures. Time is controlled
@@ -26,22 +26,25 @@ by injecting `java.time.Clock`.
 
 The first Robolectric run downloads the Android 16 (SDK 36) runtime jar from Maven Central. On
 JDK 17+ the required `--add-opens` flags are applied by the build logic. Rendered screenshots are
-written to `<module>/build/screenshots/`.
+written to `<module>/build/screenshots/`. They are side effects, not declared task outputs, so a
+test task restored from the Gradle build cache writes none: regenerate them with
+`./gradlew testDebugUnitTest --rerun` (or `--rerun-tasks`).
 
-## Phase 1 results (1 November 2026)
+## Results (1 November 2026, after the interface rebuild)
 
-All 56 tests pass; `lintDebug` reports no issues in any module; `assembleDebug` and the
-minified `assembleRelease` both succeed.
+All 70 tests pass; `lintDebug` reports no issues in any module; `assembleDebug` and the minified
+`assembleRelease` both succeed.
 
 | Suite | Tests |
 | --- | --- |
-| `core:model` — `ProjectValidatorTest`, `ActivityTrendTest` | 10 |
-| `core:database` — `ProjectDaoTest` | 8 |
-| `core:data` — `OfflineFirstProjectRepositoryTest`, `DataStoreUserPreferencesRepositoryTest` | 9 |
+| `core:model` — `ProjectValidatorTest`, `ActivityTrendTest` (incl. peak hours) | 11 |
+| `core:database` — `ProjectDaoTest` (incl. deadlines) | 9 |
+| `core:data` — `OfflineFirstProjectRepositoryTest` (incl. hourly insights, deadlines), `DataStoreUserPreferencesRepositoryTest` | 11 |
 | `feature:projects` — editor, detail, list ViewModels, `ScheduleStateTest` | 18 |
-| `feature:dashboard` — `DashboardViewModelTest`, `DashboardScreenshotTest` | 5 |
+| `feature:dashboard` — `DashboardViewModelTest`, `DashboardScreenshotTest` | 6 |
+| `feature:insights` — `InsightsViewModelTest`, `InsightsScreenshotTest` | 8 |
 | `feature:search`, `feature:settings` — ViewModel tests | 4 |
-| `app` — `CreateProjectFlowTest` (create project end to end; unsaved-changes guard) | 2 |
+| `app` — `CreateProjectFlowTest`: create a project end to end; unsaved-changes guard; every Home entry point and all five tabs | 3 |
 
 ## Not covered yet
 
@@ -67,6 +70,9 @@ minified `assembleRelease` both succeed.
 7. Search for part of a customer name, a reference number and `50%` (literal match).
 8. Switch theme in Settings (system, light, dark) and check every screen in both themes.
 9. Switch tabs from a scrolled list and come back: scroll position and filter are kept.
-10. Tablet or unfolded foldable: navigation rail on every screen, two-column dashboard.
-11. TalkBack: every icon button is announced with a label; the gauge and chart read a summary.
+10. Tablet or unfolded foldable: navigation rail on every screen, two-column Home.
+11. TalkBack: every icon button is announced with a label; the progress ring and charts read a summary.
 12. Font size at maximum: no clipped text on the dashboard, list cards or editor.
+13. Home: the bell opens the activity log, both *See Details* links and both metric cards open the
+    right screens, feature cards and their *Open Project* pills open the project.
+14. Insights tab: tap the chart to move the highlighted day; the info button explains the average.

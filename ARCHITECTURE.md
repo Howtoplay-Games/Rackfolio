@@ -17,13 +17,13 @@
 
 ```mermaid
 graph TD
-  app --> fd[feature:dashboard] & fp[feature:projects] & fs[feature:search] & fset[feature:settings]
-  fd & fp & fs & fset --> ui[core:ui] & data[core:data] & ds[core:designsystem]
+  app --> fd[feature:dashboard] & fi[feature:insights] & fp[feature:projects] & fs[feature:search] & fset[feature:settings]
+  fd & fi & fp & fs & fset --> ui[core:ui] & data[core:data] & ds[core:designsystem]
   ui --> ds
   ui --> model[core:model]
   data --> db[core:database] & model
   db --> model
-  testing[core:testing] -.tests only.-> fd & fp & fs & fset & app
+  testing[core:testing] -.tests only.-> fd & fi & fp & fs & fset & app
 ```
 
 | Module | Responsibility | Depends on |
@@ -31,8 +31,8 @@ graph TD
 | `core:model` | Domain types, stable persistence codes, validation, text sanitising. Pure Kotlin/JVM. | — |
 | `core:database` | Room database, entities, DAOs, `LIKE` escaping, exported schemas | model |
 | `core:data` | Repository interfaces and offline-first implementations, DataStore, `Clock` | database, model |
-| `core:designsystem` | Theme tokens, Inter font, icon set, generic components (no domain types) | Compose |
-| `core:ui` | Shared domain-aware UI: project card, status pill, activity row, formatting | designsystem, model |
+| `core:designsystem` | Theme tokens, Inter font, icon set, 3D emoji artwork, generic components (no domain types) | Compose |
+| `core:ui` | Shared domain-aware UI: project card, status pill, activity row, artwork choice, greeting, formatting | designsystem, model |
 | `core:testing` | Fakes for every repository, `MainDispatcherRule`, screenshot helper | data |
 | `feature:*` | One screen family each: route, ViewModel, composables, navigation contract | core modules only |
 | `app` | `Application`, `MainActivity`, navigation shell and graph | everything |
@@ -97,17 +97,21 @@ routes plus `NavGraphBuilder` extensions; `app/navigation/PortProofNavHost.kt` w
 
 | Route | Kind | Notes |
 | --- | --- | --- |
-| `HomeRoute` | Top-level (start) | Dashboard |
-| `ProjectsRoute(filter?)` | Top-level | Optional preselected filter from dashboard cards/actions |
-| `SettingsRoute` | Top-level | |
-| `SearchRoute` | Shared | Pushed on the current stack |
+| `HomeRoute` | Tab 1 (start) | Home screen |
+| `ProjectsRoute(filter?)` | Tab 2 | Optional preselected filter from Home and Metrics cards |
+| `SearchRoute` | Tab 3 | Global project search. Becomes the Equipment tab in Phase 2 |
+| `MetricsRoute` | Tab 4 ("Insights") | Metrics Summary. Grows into Reports in Phase 4 |
+| `SettingsRoute` | Tab 5 | |
+| `InsightRoute` | Shared | Opened from Home's *See Details* and the *Due This Week* card |
+| `ActivityLogRoute` | Shared | Opened from the bell on Home |
 | `ProjectDetailRoute(projectId)` | Shared | Contextual project navigation starts here |
 | `ProjectEditorRoute(projectId?)` | Shared | `null` = create. After creating, the editor is replaced by the detail screen |
 
-Planned: `EquipmentRoute` (top-level, Phase 2) and `ReportsRoute` (top-level, Phase 4) complete
-the five-item bar (Home, Projects, Equipment, Reports, Settings). Project sections (equipment,
-cabling, tests, defects, photos, report) are reached from the project detail screen, and QR scans
-deep-link to equipment and cable records.
+The five-item bar follows the reference design. Its long-term layout (Home, Projects, Equipment,
+Reports, Settings) is reached without ever showing an empty tab: Search hands its slot to
+Equipment in Phase 2, and the Insights tab gains the report list in Phase 4. Project sections
+(equipment, cabling, tests, defects, photos, report) are reached from the project detail screen,
+and QR scans will deep-link to equipment and cable records.
 
 Behaviour:
 
@@ -125,45 +129,50 @@ Behaviour:
 
 ## Design system
 
-The visual language follows the supplied reference design (light grey canvas, white cards with a
-hairline border, outlined icon tiles, metric cards with trend lines, a semicircle "health" gauge,
-a smooth line chart with a dark tooltip, hatched progress bars, and a floating pill navigation bar
-whose selected item is a near-black circle with its label). It is adapted to PortProof's domain:
+The interface reproduces the second supplied reference design (three screens: home, "Insight" and
+"Health Metrics Summary"), with its fitness content replaced by PortProof data:
 
-| Reference element | PortProof use |
+| Reference element | PortProof implementation |
 | --- | --- |
-| Income / expenses / savings cards | Total, active and completed projects, with "this month" trends |
-| "Others" icon row | Quick actions: new project, search, active, completed, archived |
-| Cash-flow health gauge + three columns | Completion rate + planned / in progress / on hold counts |
-| Weekly spending chart | Activity over the last 7 days, compared with the previous 7 days |
-| Spending-limit hatched bar | Project schedule progress ("Day 6 of 17", overdue in red) |
-| Floating pill navigation | Same component, same selected-state treatment |
+| Avatar, "Good Morning / Anna Santos", bell | Initials avatar (opens Settings), time-based greeting with the technician name, bell opens the activity log |
+| Black "Workout Progress" card with ring and violet knob | `PpHeroProgressCard`: completion rate and open projects left |
+| "Health Overview" emoji metric cards | `PpMetricCard`: active projects, projects due this week |
+| "Popular Exercise" pastel cards with photo and "Start Now" | `PpFeatureCard`: the three most recently updated open projects, artwork chosen from the project name, "Open Project" pill; a final card starts a new project |
+| Dark floating nav pill, violet selected circle | `PpFloatingNavBar`: Home, Projects, Search, Insights, Settings |
+| "Insight" screen: Heart Rate bars, Hydration bar and rings, weekly target | Activity by hour (`PpBarChart`, busiest hours in green), completion (`PpProgressBar`, `PpRingRow`), upcoming deadlines |
+| "Health Metrics Summary": black area chart, metric grid | `PpAreaChartCard` (updates per day, tap to inspect, info dialog), six project-count cards |
 
-Where the written brief and the reference differ, the reference wins for layout and component
-style, and the brief wins for colour: the accent is a restrained indigo-blue (`#4453D6` light,
-`#93A0FF` dark) and the dark theme uses navy/graphite foundations (`#0A0E15` canvas, `#121722`
-cards). Cards use a 14dp radius, tighter than the Material default.
+Deliberate differences: the reference uses stock photos of people (avatar and exercise cards);
+PortProof has no licensed photography, so it uses an initials avatar and bundled 3D artwork
+(Microsoft Fluent Emoji, MIT) that is identical on every device. The reference's system status bar
+and device frames are not part of the app.
 
-Tokens (`core/designsystem/theme`): `PortProofColors` (semantic roles, every text pair meets WCAG AA
-4.5:1, checked with a script during Phase 1), `PortProofTypography` (Inter, tabular figures for
-numbers), `PortProofSpacing` (4dp scale) and `PortProofShapes`. The Material 3 colour scheme is
-derived from the same tokens, so stock dialogs and pickers match. Dynamic colour is deliberately
-off. Icons are a curated Lucide set generated into `PortProofIcons` by `tools/icons`
-(`icons.txt` lists them; rerun the script to add more).
+Tokens (`core/designsystem/theme`): `PortProofColors` (white canvas and cards with hairline borders,
+near-black hero cards and pill buttons, violet accent `#7B3FF2`, pastel lavender/lime/sky/peach
+feature cards, pink/green and blue chart colours), `PortProofTypography` (Inter, Regular and Medium
+weights as in the reference, tabular figures), `PortProofSpacing` and `PortProofShapes` (20dp cards,
+22dp hero cards, 24dp feature cards, pill buttons). The dark theme keeps the same structure on
+graphite surfaces, lifts hero cards and the nav bar so they stay distinct, and inverts pill buttons
+to white. The Material 3 scheme is derived from the same tokens; dynamic colour is off. Every
+content text/background pair meets WCAG AA (4.5:1); the reference's lighter grey (`#8E8E93`,
+3.3:1) was darkened to `#636368`/`#6A6A6F` to meet it.
 
-Components: `PpCard`, `PpIconTile`, `PpStatCard`, `PpDelta`, `PpSectionHeader`, `PpStatusPill`,
-`PpPrimaryButton`, `PpSecondaryButton`, `PpChipButton`, `PpIconButton`, `PpAvatarButton`,
-`PpTextField`, `PpPickerField`, `PpSearchField`, `PpSegmentedControl`, `PpSemiCircleGauge`,
-`PpHatchedProgressBar`, `PpLineChart`, `PpFloatingNavBar`, `PpNavigationRail`, `PpTopBar`,
-`PpListRow`, `PpQuickAction`, `PpEmptyState`, `PpConfirmDialog`.
+Components: `PpCard`, `PpPanel`, `PpIconTile`, `PpEmojiBadge`, `PpHeroProgressCard`,
+`PpProgressRing`, `PpMetricCard`, `PpFeatureCard`, `PpInsightCard`, `PpBarChart`, `PpProgressBar`,
+`PpRingRow`, `PpAreaChartCard`, `PpHatchedProgressBar`, `PpPrimaryButton`, `PpSecondaryButton`,
+`PpPillButton`, `PpTextLink`, `PpChipButton`, `PpIconButton`, `PpAvatarButton`, `PpTextField`,
+`PpPickerField`, `PpSearchField`, `PpSegmentedControl`, `PpSectionHeader`, `PpStatusPill`,
+`PpFloatingNavBar`, `PpNavigationRail`, `PpTopBar` (centred title), `PpListRow`, `PpEmptyState`,
+`PpConfirmDialog`. Icons: a curated Lucide set generated into `PortProofIcons` (`tools/icons`);
+artwork: `PpEmoji` and `PpIllustration` (`tools/emoji`).
 
 ### Adaptive layout and accessibility
 
-- Widths below 600dp: single column, floating bar, stat cards scroll horizontally.
-  600–840dp: rail, single column, content capped at 880dp. From 840dp: rail and a two-column
-  dashboard.
-- Touch targets are at least 48dp (icon buttons draw a 40dp visual inside a 48dp target).
-- Section titles are marked as headings; the gauge and chart expose a text summary to TalkBack;
+- Widths below 600dp: single column and the floating bar. 600–840dp: navigation rail, single
+  column, content capped at 880dp. From 840dp: rail and a two-column Home (progress and overview
+  beside the project cards).
+- Touch targets are at least 48dp (icon buttons draw a 44dp circle inside a 48dp target).
+- Section titles are marked as headings; the progress ring and every chart expose a text summary to TalkBack;
   status is never shown by colour alone; text fields announce validation errors.
 - All strings are resources, with plurals where counts appear.
 
@@ -251,15 +260,17 @@ key because it is never referenced externally.
 **ADR-005 Raw values in entities, conversion in the data layer.** See "Layers and data flow".
 Room never throws on an unexpected enum value, and codes can evolve without TypeConverters.
 
-**ADR-006 Bundled Inter font and generated Lucide icons.** Downloadable fonts fail offline on
-first launch, and `material-icons-extended` is very large and has a different (filled, heavier)
-style from the reference. The font adds about 1.6 MB to the APK.
+**ADR-006 Bundled Inter font, generated Lucide icons and bundled 3D emoji.** Downloadable fonts
+fail offline on first launch, and `material-icons-extended` is very large and has a heavier style
+than the reference. Emoji are bundled as images because vendor emoji fonts differ between devices
+and Android versions. Together they add about 1.7 MB to the APK (fonts 1.6 MB, artwork 0.1 MB).
 
 **ADR-007 Validation types.** Only `ProjectValidator` can create a `ProjectDraft`, so unvalidated
 input cannot be persisted by mistake.
 
-**ADR-008 No placeholder tabs.** The bar shows Home, Projects and Settings in Phase 1; Equipment
-and Reports are added with their features.
+**ADR-008 No placeholder tabs.** Every tab opens a working screen. The reference's five-item bar is
+filled with Home, Projects, Search, Insights and Settings; Search becomes Equipment in Phase 2 and
+Insights gains Reports in Phase 4, rather than shipping empty Equipment and Reports tabs now.
 
 **ADR-009 Cascade deletes behind explicit confirmation (planned schema).** Ownership relations
 cascade at database level so no orphan rows can exist; the UI states exactly what will be deleted

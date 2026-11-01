@@ -65,6 +65,12 @@ activity; the app does not keep "deleted project" entries.
 - **Search:** `LIKE '%…%' ESCAPE '\'` over name, reference, customer, site name (and address for
   global search). User input is escaped first (`SqlLike`). `COLLATE NOCASE` folds ASCII only;
   accent-insensitive search would need an FTS table (candidate for Phase 5).
+- **Deadlines** (`ProjectDao.observeDeadlines`): open, non-archived projects with `end_date` on or
+  before a given day, earliest first, so overdue projects lead. Used for *Due This Week* and the
+  Insight screen. No index on `end_date` yet; add one if project counts reach the thousands.
+- **Activity insights:** one query returns the timestamps of the last 14 days; daily counts, the
+  previous-period total, the hour-of-day histogram and today's count are all computed from it in
+  Kotlin with the device time zone (`OfflineFirstActivityRepository.observeActivityInsights`).
 - **Sorting:** `CASE` expressions in `ORDER BY` because column names cannot be bound parameters;
   null start dates sort last through `(start_date IS NULL)`.
 
