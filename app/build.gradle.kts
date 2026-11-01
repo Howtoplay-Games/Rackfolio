@@ -40,6 +40,7 @@ android {
 
 dependencies {
     implementation(project(":feature:dashboard"))
+    implementation(project(":feature:insights"))
     implementation(project(":feature:projects"))
     implementation(project(":feature:search"))
     implementation(project(":feature:settings"))

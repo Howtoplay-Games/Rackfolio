@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Metrics Summary tab -->
+    <string name="metrics_title">Metrics Summary</string>
+    <string name="metrics_average">Average</string>
+    <string name="metrics_unit_per_day">UPDATES / DAY</string>
+    <string name="metrics_chart_a11y">Updates per day over the last 7 days: %1$s</string>
+    <string name="metrics_info">About this chart</string>
+    <string name="metrics_info_title">Daily activity</string>
+    <string name="metrics_info_message">Every change you record (new projects, edits, status changes, archiving) counts as one update. The average covers the last 7 days, today included. Tap the chart to highlight a day.</string>
+    <string name="metrics_info_ok">Got it</string>
+    <string name="metrics_total">Total Projects</string>
+    <string name="metrics_active">Active Projects</string>
+    <string name="metrics_completed">Completed Projects</string>
+    <string name="metrics_planned">Planned Projects</string>
+    <string name="metrics_on_hold">Projects On Hold</string>
+    <string name="metrics_archived">Archived Projects</string>
+    <plurals name="metrics_unit_projects">
+        <item quantity="one">project</item>
+        <item quantity="other">projects</item>
+    </plurals>
+
+    <!-- Insight detail -->
+    <string name="insight_title">Insight</string>
+    <string name="insight_activity_title">Activity by Hour</string>
+    <string name="insight_last_7_days">Last 7 days</string>
+    <string name="insight_today">Today</string>
+    <plurals name="insight_updates">
+        <item quantity="one">%d update</item>
+        <item quantity="other">%d updates</item>
+    </plurals>
+    <string name="insight_hours_a11y">Updates by hour of day over the last 7 days. Busiest hours: %1$s</string>
+    <string name="insight_hours_none">No updates in the last 7 days</string>
+    <string name="insight_completion_title">Completion</string>
+    <string name="insight_all_projects">All active and completed projects</string>
+    <string name="insight_completed">Completed</string>
+    <string name="insight_days_a11y">Activity per day over the last 7 days: %1$s</string>
+    <string name="insight_deadlines_title">Upcoming Deadlines</string>
+    <string name="insight_next_7_days">Next 7 days, overdue included</string>
+    <string name="insight_no_deadlines">No open projects are due in the next 7 days.</string>
+    <string name="insight_due_on">Due %1$s</string>
+    <string name="insight_overdue_since">Overdue · %1$s</string>
+    <string name="insight_due_today">Due today</string>
+
+    <!-- Activity log -->
+    <string name="activity_title">Activity</string>
+    <string name="activity_today">Today</string>
+    <string name="activity_yesterday">Yesterday</string>
+    <string name="activity_empty_title">No activity yet</string>
+    <string name="activity_empty_message">Creating, editing, archiving and status changes are recorded here.</string>
+</resources>

@@ -27,6 +27,12 @@
     <string name="ui_activity_restored">Project restored</string>
     <string name="ui_activity_deleted_project">Deleted project</string>
 
+    <!-- Greeting -->
+    <string name="ui_greeting_morning">Good Morning</string>
+    <string name="ui_greeting_afternoon">Good Afternoon</string>
+    <string name="ui_greeting_evening">Good Evening</string>
+    <string name="ui_see_details">See Details</string>
+
     <!-- Relative time -->
     <string name="ui_time_just_now">Just now</string>
     <string name="ui_updated">Updated %1$s</string>

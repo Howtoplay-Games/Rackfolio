@@ -1,6 +1,7 @@
 package com.portproof.core.data.repository
 
 import com.portproof.core.model.ActivityEntry
+import com.portproof.core.model.ActivityInsights
 import com.portproof.core.model.ActivityTrend
 import com.portproof.core.model.ProjectId
 import kotlinx.coroutines.flow.Flow
@@ -12,4 +13,7 @@ interface ActivityRepository {
 
     /** Daily counts for the last [days] days (today included) plus the total of the [days] before. */
     fun observeActivityTrend(days: Int): Flow<ActivityTrend>
+
+    /** [observeActivityTrend] plus an hour-of-day breakdown of the same [days] and today's total. */
+    fun observeActivityInsights(days: Int): Flow<ActivityInsights>
 }

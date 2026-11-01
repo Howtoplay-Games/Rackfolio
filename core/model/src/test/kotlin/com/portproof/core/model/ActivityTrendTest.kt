@@ -30,4 +30,14 @@ class ActivityTrendTest {
         assertEquals(0.25f, summary.completionRatio)
         assertEquals(false, summary.isEmpty)
     }
+
+    @Test
+    fun `peak hours ignore empty hours and average uses the period length`() {
+        val hours = MutableList(24) { 0 }.apply { this[9] = 5; this[13] = 2; this[16] = 7; this[20] = 1 }
+        val insights = ActivityInsights(trend(listOf(7, 0, 7), previous = 0), hours, today = 7)
+        assertEquals(setOf(16, 9, 13), insights.peakHours())
+        assertEquals(setOf(16), insights.peakHours(count = 1))
+        assertEquals(14f / 3, insights.dailyAverage)
+        assertEquals(emptySet(), ActivityInsights(trend(listOf(0), 0), List(24) { 0 }, 0).peakHours())
+    }
 }

@@ -59,3 +59,24 @@ data class ActivityTrend(
     val changeRatio: Float?
         get() = if (previousPeriodTotal == 0) null else (total - previousPeriodTotal).toFloat() / previousPeriodTotal
 }
+
+/**
+ * Activity analysis for the Insight screens: the daily [trend], how many entries were logged in each
+ * hour of the day across the same period ([byHour], 24 values, local time) and today's total.
+ */
+data class ActivityInsights(
+    val trend: ActivityTrend,
+    val byHour: List<Int>,
+    val today: Int,
+) {
+    init {
+        require(byHour.size == 24) { "byHour must have 24 entries" }
+    }
+
+    /** Indices of the busiest hours (up to [count]), ignoring hours without activity. */
+    fun peakHours(count: Int = 3): Set<Int> =
+        byHour.withIndex().filter { it.value > 0 }.sortedByDescending { it.value }.take(count).map { it.index }.toSet()
+
+    /** Average entries per day over the trend period. */
+    val dailyAverage: Float get() = if (trend.days.isEmpty()) 0f else trend.total.toFloat() / trend.days.size
+}

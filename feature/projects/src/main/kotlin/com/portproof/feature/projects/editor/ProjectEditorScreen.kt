@@ -39,7 +39,6 @@ import com.portproof.core.designsystem.component.PpCard
 import com.portproof.core.designsystem.component.PpConfirmDialog
 import com.portproof.core.designsystem.component.PpEmptyState
 import com.portproof.core.designsystem.component.PpIconButton
-import com.portproof.core.designsystem.component.PpIconButtonShape
 import com.portproof.core.designsystem.component.PpPrimaryButton
 import com.portproof.core.designsystem.component.PpSectionHeader
 import com.portproof.core.designsystem.component.PpSegmentedControl
@@ -166,9 +165,7 @@ internal fun ProjectEditorScreen(
                     PpIconButton(
                         PortProofIcons.Close,
                         stringResource(DsR.string.designsystem_close),
-                        callbacks.onClose,
-                        shape = PpIconButtonShape.Circle,
-                    )
+                        callbacks.onClose)
                 },
             )
             when (loadState) {

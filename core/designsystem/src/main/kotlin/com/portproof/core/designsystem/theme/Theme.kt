@@ -56,7 +56,7 @@ private fun PortProofColors.toMaterialColorScheme(): ColorScheme {
         onSecondary = surface,
         secondaryContainer = surfaceSunken,
         onSecondaryContainer = textPrimary,
-        tertiary = chartSecondary,
+        tertiary = chartPeak,
         background = background,
         onBackground = textPrimary,
         surface = surface,

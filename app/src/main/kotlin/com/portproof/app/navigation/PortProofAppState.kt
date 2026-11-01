@@ -16,7 +16,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.portproof.core.model.ProjectListFilter
 import com.portproof.feature.dashboard.navigation.HomeRoute
+import com.portproof.feature.insights.navigation.MetricsRoute
 import com.portproof.feature.projects.navigation.ProjectsRoute
+import com.portproof.feature.search.navigation.SearchRoute
 import com.portproof.feature.settings.navigation.SettingsRoute
 
 @Composable
@@ -56,6 +58,8 @@ class PortProofAppState(val navController: NavHostController) {
         when (destination) {
             TopLevelDestination.HOME -> navController.navigate(HomeRoute, options)
             TopLevelDestination.PROJECTS -> navController.navigate(ProjectsRoute(), options)
+            TopLevelDestination.SEARCH -> navController.navigate(SearchRoute, options)
+            TopLevelDestination.INSIGHTS -> navController.navigate(MetricsRoute, options)
             TopLevelDestination.SETTINGS -> navController.navigate(SettingsRoute, options)
         }
     }

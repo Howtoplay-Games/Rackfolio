@@ -6,6 +6,7 @@ clean, an architecture review, updated documentation, and a list of remaining is
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 1 | Foundation: project setup, architecture, Gradle, design system, navigation, dashboard, projects, Room | **Done** (1 Nov 2026) |
+| 1b | Interface rebuilt to the second reference design (Home, Insight, Metrics Summary, activity log, five-tab bar) | **Done** (1 Nov 2026) |
 | 2 | Equipment management, cable and port mapping, QR generation and scanning | Next |
 | 3 | Commissioning and test records, photo evidence, defect tracking | Planned |
 | 4 | PDF handover reports, CSV export, backup and restore | Planned |
@@ -27,6 +28,15 @@ clean, an architecture review, updated documentation, and a list of remaining is
 - Launcher icon (adaptive, with themed monochrome layer), splash screen, backup rules.
 - 56 automated tests, all passing; Lint clean; see TESTING.md.
 
+## Phase 1b — interface rebuilt to the reference design
+
+- New visual language: white canvas, black hero cards and pill buttons, violet accent, pastel
+  feature cards, bundled 3D emoji artwork, dark floating five-item navigation pill.
+- Home rebuilt (greeting, Project Progress ring, Overview metrics, Active Projects feature cards).
+- New `feature:insights` module: Metrics Summary tab, Insight screen, activity log.
+- Data additions: upcoming-deadline query and hour-of-day activity insights.
+- 70 automated tests, all passing; Lint clean.
+
 ### Remaining issues after Phase 1
 
 | Issue | Plan |
@@ -38,6 +48,8 @@ clean, an architecture review, updated documentation, and a list of remaining is
 | Search folds ASCII case only (`COLLATE NOCASE`) | Phase 5: evaluate FTS4 with a Unicode tokenizer |
 | No in-app open-source licence screen yet | Phase 5, before release (required for the bundled font) |
 | `applicationId` `com.portproof.app` is provisional | Confirm before the first Play upload; it cannot change afterwards |
+| The reference design uses photos of people; PortProof uses initials avatars and 3D artwork | Optional: let users add their own avatar photo (Phase 3, with the photo pipeline) |
+| Metric cards for planned and on-hold projects are not tappable (the project list has no filter for them) | Phase 2: add status filters to the project list |
 
 ## Phase 2 — equipment, cabling, QR
 

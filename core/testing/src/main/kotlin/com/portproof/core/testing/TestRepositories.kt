@@ -3,6 +3,7 @@ package com.portproof.core.testing
 import com.portproof.core.data.repository.ActivityRepository
 import com.portproof.core.data.repository.UserPreferencesRepository
 import com.portproof.core.model.ActivityEntry
+import com.portproof.core.model.ActivityInsights
 import com.portproof.core.model.ActivityTrend
 import com.portproof.core.model.DailyActivity
 import com.portproof.core.model.ProjectId
@@ -10,6 +11,7 @@ import com.portproof.core.model.ThemeMode
 import com.portproof.core.model.UserPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
@@ -28,7 +30,12 @@ class TestActivityRepository : ActivityRepository {
     override fun observeProjectActivity(projectId: ProjectId, limit: Int): Flow<List<ActivityEntry>> =
         entries.map { all -> all.filter { it.projectId == projectId }.take(limit) }
 
+    val hourly = MutableStateFlow(List(24) { 0 })
+
     override fun observeActivityTrend(days: Int): Flow<ActivityTrend> = trend
+
+    override fun observeActivityInsights(days: Int): Flow<ActivityInsights> =
+        combine(trend, hourly) { t, h -> ActivityInsights(t, h, today = t.days.lastOrNull()?.count ?: 0) }
 }
 
 class TestUserPreferencesRepository(initial: UserPreferences = UserPreferences()) : UserPreferencesRepository {

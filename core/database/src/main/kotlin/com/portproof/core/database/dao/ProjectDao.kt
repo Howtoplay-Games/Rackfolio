@@ -52,6 +52,17 @@ interface ProjectDao {
     @Query("SELECT * FROM projects WHERE archived_at IS NULL ORDER BY updated_at DESC, id ASC LIMIT :limit")
     fun observeRecent(limit: Int): Flow<List<ProjectEntity>>
 
+    /** Open, non-archived projects whose completion date is on or before [untilEpochDay] (overdue first). */
+    @Query(
+        """
+        SELECT * FROM projects
+        WHERE archived_at IS NULL AND status != 'COMPLETED' AND end_date IS NOT NULL AND end_date <= :untilEpochDay
+        ORDER BY end_date ASC, name COLLATE NOCASE ASC
+        LIMIT :limit
+        """,
+    )
+    fun observeDeadlines(untilEpochDay: Long, limit: Int): Flow<List<ProjectEntity>>
+
     /** Global search across every project, including archived ones (listed last). */
     @Query(
         """

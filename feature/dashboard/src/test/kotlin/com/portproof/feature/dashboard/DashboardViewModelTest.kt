@@ -3,7 +3,6 @@ package com.portproof.feature.dashboard
 import com.portproof.core.model.ProjectStatus
 import com.portproof.core.model.UserPreferences
 import com.portproof.core.testing.MainDispatcherRule
-import com.portproof.core.testing.TestActivityRepository
 import com.portproof.core.testing.TestProjectRepository
 import com.portproof.core.testing.TestUserPreferencesRepository
 import com.portproof.core.testing.testProject
@@ -14,6 +13,10 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import java.time.Clock
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -25,34 +28,38 @@ class DashboardViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val projects = TestProjectRepository()
-    private val preferences = TestUserPreferencesRepository(UserPreferences(technicianName = "Sam  Taylor"))
+    private val preferences = TestUserPreferencesRepository(UserPreferences(technicianName = "  Sam Taylor "))
+    private val clock = Clock.fixed(Instant.parse("2026-11-01T10:00:00Z"), ZoneOffset.UTC)
+    private val today = LocalDate.of(2026, 11, 1)
 
     @Test
-    fun firstRunIsEmptyAndGreetsByFirstName() = runTest {
-        val vm = DashboardViewModel(projects, TestActivityRepository(), preferences)
+    fun firstRunIsEmptyAndShowsTheTrimmedName() = runTest {
+        val vm = DashboardViewModel(projects, preferences, clock)
         backgroundScope.launch { vm.uiState.collect() }
         advanceUntilIdle()
         assertFalse(vm.uiState.value.isLoading)
         assertTrue(vm.uiState.value.summary.isEmpty)
-        assertEquals("Sam", vm.uiState.value.firstName)
+        assertEquals("Sam Taylor", vm.uiState.value.technicianName)
     }
 
     @Test
-    fun summaryAndRecentProjectsReflectRepository() = runTest {
+    fun featuresOpenProjectsAndCountsThisWeeksDeadlines() = runTest {
         projects.setProjects(
             listOf(
-                testProject(id = "a", status = ProjectStatus.IN_PROGRESS),
-                testProject(id = "b", status = ProjectStatus.COMPLETED),
-                testProject(id = "c", archived = true),
+                testProject(id = "a", status = ProjectStatus.IN_PROGRESS).copy(endDate = today.plusDays(3)),
+                testProject(id = "b", status = ProjectStatus.PLANNED).copy(endDate = today.minusDays(2)),
+                testProject(id = "c", status = ProjectStatus.PLANNED).copy(endDate = today.plusDays(30)),
+                testProject(id = "d", status = ProjectStatus.COMPLETED).copy(endDate = today),
+                testProject(id = "e", archived = true),
             ),
         )
-        val vm = DashboardViewModel(projects, TestActivityRepository(), preferences)
+        val vm = DashboardViewModel(projects, preferences, clock)
         backgroundScope.launch { vm.uiState.collect() }
         advanceUntilIdle()
         val state = vm.uiState.value
-        assertEquals(2, state.summary.total)
-        assertEquals(1, state.summary.active)
-        assertEquals(1, state.summary.completed)
-        assertEquals(setOf("a", "b"), state.recentProjects.map { it.id.value }.toSet())
+        assertEquals(4, state.summary.total)
+        assertEquals(3, state.summary.active)
+        assertEquals(setOf("a", "b", "c"), state.activeProjects.map { it.id.value }.toSet())
+        assertEquals(2, state.dueThisWeek) // "a" is due in 3 days, "b" is overdue
     }
 }

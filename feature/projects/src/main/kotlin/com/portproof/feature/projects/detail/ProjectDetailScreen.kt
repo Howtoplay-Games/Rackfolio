@@ -47,7 +47,6 @@ import com.portproof.core.designsystem.component.PpDivider
 import com.portproof.core.designsystem.component.PpEmptyState
 import com.portproof.core.designsystem.component.PpHatchedProgressBar
 import com.portproof.core.designsystem.component.PpIconButton
-import com.portproof.core.designsystem.component.PpIconButtonShape
 import com.portproof.core.designsystem.component.PpLabeledValue
 import com.portproof.core.designsystem.component.PpSectionHeader
 import com.portproof.core.designsystem.component.PpSegmentedControl
@@ -127,7 +126,7 @@ internal fun ProjectDetailScreen(
                 title = stringResource(R.string.project_detail_title),
                 modifier = Modifier.widthIn(max = spacing.maxContentWidth),
                 navigationIcon = {
-                    PpIconButton(PortProofIcons.Back, stringResource(DsR.string.designsystem_back), onBack, shape = PpIconButtonShape.Circle)
+                    PpIconButton(PortProofIcons.Back, stringResource(DsR.string.designsystem_back), onBack)
                 },
                 actions = {
                     if (state is ProjectDetailUiState.Success) {

@@ -8,6 +8,7 @@ import com.portproof.core.model.ProjectSort
 import com.portproof.core.model.ProjectStatus
 import com.portproof.core.model.ProjectSummary
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 /**
  * Offline-first access to projects. Room is the source of truth; every `observe*` flow re-emits
@@ -22,6 +23,9 @@ interface ProjectRepository {
 
     /** Searches every project, including archived ones. Blank queries return an empty list. */
     fun searchProjects(query: String, limit: Int): Flow<List<Project>>
+
+    /** Open projects due on or before [until], including overdue ones, earliest first. */
+    fun observeUpcomingDeadlines(until: LocalDate, limit: Int): Flow<List<Project>>
 
     suspend fun getProject(id: ProjectId): Project?
     suspend fun createProject(draft: ProjectDraft): ProjectId

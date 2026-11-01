@@ -1,6 +1,5 @@
 package com.portproof.core.designsystem.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,10 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -50,7 +47,7 @@ fun PpListRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        if (icon != null) PpIconTile(icon, size = 34.dp, iconSize = 17.dp, containerColor = colors.surfaceMuted)
+        if (icon != null) PpIconTile(icon, size = 40.dp, iconSize = 18.dp)
         Column(Modifier.weight(1f)) {
             Text(title, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary)
             if (value != null) {
@@ -70,39 +67,7 @@ fun PpListRow(
     }
 }
 
-/** Square action button with a caption underneath, as in a quick-actions row. */
-@Composable
-fun PpQuickAction(
-    icon: ImageVector,
-    label: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    emphasized: Boolean = false,
-) {
-    val colors = PortProofTheme.colors
-    Column(
-        modifier = modifier
-            .widthIn(min = 64.dp)
-            .clickable(role = Role.Button, onClick = onClick)
-            .padding(vertical = 6.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Surface(
-            modifier = Modifier.size(46.dp),
-            shape = PortProofTheme.shapes.control,
-            color = if (emphasized) colors.inverseSurface else colors.surface,
-            border = if (emphasized) null else BorderStroke(1.dp, colors.border),
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(icon, null, tint = if (emphasized) colors.onInverseSurface else colors.textPrimary, modifier = Modifier.size(20.dp))
-            }
-        }
-        Text(label, style = MaterialTheme.typography.labelSmall, color = colors.textSecondary, textAlign = TextAlign.Center, maxLines = 2)
-    }
-}
-
-/** Initials avatar on a rounded square; falls back to a person icon when no name is set. */
+/** Circular initials avatar; falls back to a person icon when no name is set. */
 @Composable
 fun PpInitialsAvatar(name: String, modifier: Modifier = Modifier, size: Dp = 40.dp) {
     val colors = PortProofTheme.colors
@@ -110,7 +75,7 @@ fun PpInitialsAvatar(name: String, modifier: Modifier = Modifier, size: Dp = 40.
     Box(
         modifier = modifier
             .size(size)
-            .background(colors.accentContainer, PortProofTheme.shapes.control),
+            .background(colors.accentContainer, PortProofTheme.shapes.pill),
         contentAlignment = Alignment.Center,
     ) {
         if (initials.isEmpty()) {
@@ -138,7 +103,7 @@ fun PpEmptyState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        PpIconTile(icon, size = 52.dp, iconSize = 24.dp, containerColor = colors.surfaceMuted)
+        PpIconTile(icon, size = 56.dp, iconSize = 24.dp)
         Text(title, style = MaterialTheme.typography.titleMedium, color = colors.textPrimary, textAlign = TextAlign.Center)
         Text(message, style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary, textAlign = TextAlign.Center)
         if (action != null) Box(Modifier.padding(top = 8.dp)) { action() }

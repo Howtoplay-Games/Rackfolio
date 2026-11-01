@@ -9,13 +9,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
 import com.portproof.feature.dashboard.navigation.HomeRoute
 import com.portproof.feature.dashboard.navigation.homeScreen
+import com.portproof.feature.insights.navigation.activityLogScreen
+import com.portproof.feature.insights.navigation.insightScreen
+import com.portproof.feature.insights.navigation.metricsScreen
+import com.portproof.feature.insights.navigation.navigateToActivityLog
+import com.portproof.feature.insights.navigation.navigateToInsight
 import com.portproof.feature.projects.navigation.ProjectEditorRoute
 import com.portproof.feature.projects.navigation.navigateToProjectDetail
 import com.portproof.feature.projects.navigation.navigateToProjectEditor
 import com.portproof.feature.projects.navigation.projectDetailScreen
 import com.portproof.feature.projects.navigation.projectEditorScreen
 import com.portproof.feature.projects.navigation.projectsScreen
-import com.portproof.feature.search.navigation.navigateToSearch
 import com.portproof.feature.search.navigation.searchScreen
 import com.portproof.feature.settings.navigation.settingsScreen
 
@@ -36,21 +40,22 @@ fun PortProofNavHost(appState: PortProofAppState, onProjectDeleted: () -> Unit, 
         popExitTransition = { fadeOut(tween(durationMillis = 160)) },
     ) {
         homeScreen(
-            onSearch = navController::navigateToSearch,
+            onOpenActivity = navController::navigateToActivityLog,
             onCreateProject = { navController.navigateToProjectEditor() },
             onOpenProject = { navController.navigateToProjectDetail(it) },
             onOpenProjects = appState::openProjects,
             onOpenSettings = { appState.navigateToTopLevel(TopLevelDestination.SETTINGS) },
+            onOpenInsight = navController::navigateToInsight,
         )
         projectsScreen(
             onProjectClick = { navController.navigateToProjectDetail(it) },
             onCreateProject = { navController.navigateToProjectEditor() },
         )
+        searchScreen(onOpenProject = { navController.navigateToProjectDetail(it) })
+        metricsScreen(onOpenProjects = appState::openProjects)
         settingsScreen()
-        searchScreen(
-            onBack = appState::navigateBack,
-            onOpenProject = { navController.navigateToProjectDetail(it) },
-        )
+        insightScreen(onBack = appState::navigateBack, onOpenProject = { navController.navigateToProjectDetail(it) })
+        activityLogScreen(onBack = appState::navigateBack, onOpenProject = { navController.navigateToProjectDetail(it) })
         projectDetailScreen(
             onBack = appState::navigateBack,
             onEdit = { navController.navigateToProjectEditor(it) },
