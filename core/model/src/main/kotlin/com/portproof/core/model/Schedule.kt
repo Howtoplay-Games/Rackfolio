@@ -1,7 +1,5 @@
-package com.portproof.feature.projects.detail
+package com.portproof.core.model
 
-import com.portproof.core.model.Project
-import com.portproof.core.model.ProjectStatus
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
