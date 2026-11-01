@@ -62,17 +62,31 @@ activity; the app does not keep "deleted project" entries.
 
 - **Dashboard counts:** one aggregate query (`ProjectDao.observeCounts`) using
   `SUM(CASE …)`. Totals exclude archived projects; *active* = not archived and not completed.
+- **Free-plan limit** (`ProjectDao.countActive`): the number of active projects (not archived, not
+  completed), read inside the same transaction as each write that would add one (create, reopen,
+  restore). See ARCHITECTURE.md, "Plan limit".
 - **Search:** `LIKE '%…%' ESCAPE '\'` over name, reference, customer, site name (and address for
   global search). User input is escaped first (`SqlLike`). `COLLATE NOCASE` folds ASCII only;
   accent-insensitive search would need an FTS table (candidate for Phase 5).
 - **Deadlines** (`ProjectDao.observeDeadlines`): open, non-archived projects with `end_date` on or
-  before a given day, earliest first, so overdue projects lead. Used for *Due This Week* and the
-  Insight screen. No index on `end_date` yet; add one if project counts reach the thousands.
+  before a given day, earliest first, so overdue projects lead. Used for the Overview's *Upcoming
+  deadlines*. No index on `end_date` yet; add one if project counts reach the thousands.
 - **Activity insights:** one query returns the timestamps of the last 14 days; daily counts, the
   previous-period total, the hour-of-day histogram and today's count are all computed from it in
   Kotlin with the device time zone (`OfflineFirstActivityRepository.observeActivityInsights`).
 - **Sorting:** `CASE` expressions in `ORDER BY` because column names cannot be bound parameters;
   null start dates sort last through `(start_date IS NULL)`.
+
+### Other stored files (DataStore Preferences)
+
+Settings and security state that is not relational lives in three DataStore files under
+`files/datastore/`. A corrupted file is replaced by an empty one (defaults apply).
+
+| File | Keys | Backup |
+| --- | --- | --- |
+| `user_preferences` | `technician_name`, `company_name`, `theme_mode` | Cloud (encrypted only) and device transfer |
+| `app_lock` | `pin_hash`, `pin_salt` (Base64), `pin_iterations`, `failed_attempts`, `locked_until` (epoch ms), `biometric_enabled`. The PIN itself is never stored | Excluded from both |
+| `billing` | `pro_active` (result of the last Google Play check), `debug_pro_override` (read only in debug builds) | Excluded from both |
 
 ## Planned schema (Phases 2–4)
 
