@@ -2,4 +2,9 @@
 <resources>
     <string name="app_name">PortProof</string>
     <string name="project_deleted_message">Project deleted</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_projects">Projects</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_overview">Overview</string>
+    <string name="nav_settings">Settings</string>
 </resources>

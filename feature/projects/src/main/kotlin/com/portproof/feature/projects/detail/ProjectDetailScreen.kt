@@ -1,5 +1,6 @@
 package com.portproof.feature.projects.detail
 
+import com.portproof.core.model.ScheduleState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,14 +30,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.portproof.core.designsystem.component.PpCard
-import com.portproof.core.designsystem.component.PpCircleButton
-import com.portproof.core.designsystem.component.PpCircleStyle
+import com.portproof.core.designsystem.component.PpIconButton
+import com.portproof.core.designsystem.component.PpIconButtonStyle
 import com.portproof.core.designsystem.component.PpConfirmDialog
 import com.portproof.core.designsystem.component.PpEmptyState
 import com.portproof.core.designsystem.component.PpGradientScreen
@@ -59,6 +61,7 @@ internal fun ProjectDetailRoute(
     onHome: () -> Unit,
     onEdit: (ProjectId) -> Unit,
     onDeleted: () -> Unit,
+    onOpenPro: () -> Unit,
     viewModel: ProjectDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -72,9 +75,12 @@ internal fun ProjectDetailRoute(
     val restoredText = stringResource(R.string.project_restored_message)
     val undoText = stringResource(UiR.string.ui_action_undo)
     val errorText = stringResource(UiR.string.ui_error_generic)
+    val seeProText = stringResource(UiR.string.ui_action_see_pro)
+    val resources = LocalResources.current
+    // Consume the message only after the snackbar is gone: clearing it first would change this
+    // effect's key and cancel the snackbar (and its Undo) straight away.
     LaunchedEffect(message) {
         val current = message ?: return@LaunchedEffect
-        viewModel.onMessageShown()
         when (current) {
             ProjectDetailMessage.Archived -> {
                 val result = snackbarHostState.showSnackbar(archivedText, undoText, duration = SnackbarDuration.Short)
@@ -82,7 +88,13 @@ internal fun ProjectDetailRoute(
             }
             ProjectDetailMessage.Restored -> snackbarHostState.showSnackbar(restoredText)
             ProjectDetailMessage.Error -> snackbarHostState.showSnackbar(errorText)
+            is ProjectDetailMessage.LimitReached -> {
+                val text = resources.getQuantityString(UiR.plurals.ui_limit_reached, current.limit, current.limit)
+                val result = snackbarHostState.showSnackbar(text, seeProText, withDismissAction = true, duration = SnackbarDuration.Long)
+                if (result == SnackbarResult.ActionPerformed) onOpenPro()
+            }
         }
+        viewModel.onMessageShown()
     }
 
     ProjectDetailScreen(
@@ -209,7 +221,7 @@ private fun StatusCard(state: ProjectDetailUiState.Success, onStatusSelected: (P
 private fun MoreMenu(isArchived: Boolean, onArchive: () -> Unit, onRestore: () -> Unit, onDelete: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     Box {
-        PpCircleButton(PortProofIcons.Ellipsis, stringResource(UiR.string.ui_action_more), { expanded = true }, style = PpCircleStyle.Accent, visualSize = 56.dp)
+        PpIconButton(PortProofIcons.Ellipsis, stringResource(UiR.string.ui_action_more), { expanded = true }, style = PpIconButtonStyle.Accent, visualSize = 54.dp)
         DropdownMenu(expanded, onDismissRequest = { expanded = false }, containerColor = PortProofTheme.colors.surface) {
             MenuItem(
                 text = stringResource(if (isArchived) UiR.string.ui_action_restore else UiR.string.ui_action_archive),
@@ -232,7 +244,7 @@ private fun MenuItem(text: String, icon: ImageVector, destructive: Boolean = fal
     DropdownMenuItem(
         text = { Text(text, style = MaterialTheme.typography.bodyMedium, color = color) },
         leadingIcon = { Icon(icon, null, tint = color, modifier = Modifier.size(18.dp)) },
-        trailingIcon = if (checked) ({ Icon(PortProofIcons.Check, null, tint = PortProofTheme.colors.accentStrong) }) else null,
+        trailingIcon = if (checked) ({ Icon(PortProofIcons.Check, null, tint = PortProofTheme.colors.accentText) }) else null,
         onClick = onClick,
     )
 }

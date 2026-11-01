@@ -2,7 +2,7 @@
 <resources>
     <string name="settings_title">Settings</string>
     <string name="settings_profile">Profile</string>
-    <string name="settings_profile_footer">Shown on your dashboard. Stored only on this device.</string>
+    <string name="settings_profile_footer">Shown when you log in. Stored only on this device.</string>
     <string name="settings_technician_name">Technician name</string>
     <string name="settings_company_name">Company name</string>
     <string name="settings_not_set">Not set</string>
@@ -11,6 +11,19 @@
         <item quantity="other">Must be %1$d characters or fewer</item>
     </plurals>
 
+    <string name="settings_plan_free">Free plan</string>
+    <!-- %1$d = active projects used, %2$d = limit -->
+    <plurals name="settings_plan_free_body">
+        <item quantity="one">%1$d of %2$d active project used</item>
+        <item quantity="other">%1$d of %2$d active projects used</item>
+    </plurals>
+    <string name="settings_plan_pro">PortProof Pro</string>
+    <string name="settings_plan_pro_body">Unlimited active projects</string>
+    <string name="settings_plan_upgrade">See PortProof Pro</string>
+    <string name="settings_plan_manage">Manage subscription</string>
+    <string name="settings_security">Login &amp; security</string>
+    <string name="settings_security_body">PIN and fingerprint unlock</string>
+
     <string name="settings_appearance">Appearance</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_theme_light">Light</string>
@@ -18,7 +31,7 @@
 
     <string name="settings_privacy">Data &amp; privacy</string>
     <string name="settings_privacy_local_title">Stored on this device</string>
-    <string name="settings_privacy_local_body">PortProof has no account, no servers and no internet permission. Your projects are kept in the app\u2019s private storage.</string>
+    <string name="settings_privacy_local_body">PortProof has no account and no servers. Your projects are kept in the app\u2019s private storage, and PortProof never uploads them. Subscriptions go through Google Play: its billing library has internet access and may send its own logs to Google.</string>
     <string name="settings_privacy_backup_title">Device backup</string>
     <string name="settings_privacy_backup_body">If Android backup is turned on, your project records may be included in your device\u2019s encrypted backup.</string>
 

@@ -21,7 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.portproof.core.designsystem.component.PpCard
 import com.portproof.core.designsystem.component.PpEmptyState
 import com.portproof.core.designsystem.component.PpListScreen
-import com.portproof.core.designsystem.component.PpScreenHeader
+import com.portproof.core.designsystem.component.PpTopBar
 import com.portproof.core.designsystem.icon.PortProofIcons
 import com.portproof.core.designsystem.theme.PortProofTheme
 import com.portproof.core.model.ProjectId
@@ -45,7 +45,7 @@ internal fun ActivityLogScreen(state: ActivityLogUiState, onBack: () -> Unit, on
     val groups = state.entries.groupBy { it.occurredAt.atZone(zone).toLocalDate() }
     PpListScreen {
         Column(Modifier.padding(horizontal = spacing.screenGutter)) {
-            PpScreenHeader(stringResource(R.string.activity_title), onBack = onBack)
+            PpTopBar(stringResource(R.string.activity_title), onBack = onBack)
         }
         if (!state.isLoading && state.entries.isEmpty()) {
             PpEmptyState(

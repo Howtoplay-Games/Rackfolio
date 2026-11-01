@@ -1,10 +1,13 @@
 package com.portproof.feature.projects.detail
 
+import com.portproof.core.model.scheduleStateOf
+import com.portproof.core.model.ScheduleState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.portproof.core.data.repository.ActivityRepository
 import com.portproof.core.data.repository.ProjectRepository
+import com.portproof.core.model.ActiveProjectLimitException
 import com.portproof.core.model.ActivityEntry
 import com.portproof.core.model.Project
 import com.portproof.core.model.ProjectId
@@ -35,7 +38,14 @@ sealed interface ProjectDetailUiState {
     ) : ProjectDetailUiState
 }
 
-enum class ProjectDetailMessage { Archived, Restored, Error }
+sealed interface ProjectDetailMessage {
+    data object Archived : ProjectDetailMessage
+    data object Restored : ProjectDetailMessage
+    data object Error : ProjectDetailMessage
+
+    /** The change would exceed the free plan's active-project limit; nothing was changed. */
+    data class LimitReached(val limit: Int) : ProjectDetailMessage
+}
 
 @HiltViewModel
 class ProjectDetailViewModel @Inject constructor(
@@ -87,6 +97,8 @@ class ProjectDetailViewModel @Inject constructor(
                 if (block() && onSuccess != null) _message.value = onSuccess
             } catch (e: CancellationException) {
                 throw e
+            } catch (e: ActiveProjectLimitException) {
+                _message.value = ProjectDetailMessage.LimitReached(e.limit)
             } catch (_: Exception) {
                 _message.value = ProjectDetailMessage.Error
             }

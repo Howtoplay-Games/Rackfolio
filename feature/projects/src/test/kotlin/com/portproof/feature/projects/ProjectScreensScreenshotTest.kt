@@ -1,5 +1,6 @@
 package com.portproof.feature.projects
 
+import com.portproof.core.model.scheduleStateOf
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -19,7 +20,6 @@ import com.portproof.feature.projects.detail.DetailActions
 import com.portproof.feature.projects.detail.ProjectDetailScreen
 import com.portproof.feature.projects.detail.ProjectDetailUiState
 import com.portproof.feature.projects.detail.reviewOf
-import com.portproof.feature.projects.detail.scheduleStateOf
 import com.portproof.feature.projects.list.ProjectListScreen
 import com.portproof.feature.projects.list.ProjectListUiState
 import org.junit.Rule
@@ -75,19 +75,20 @@ class ProjectScreensScreenshotTest {
                 sort = ProjectSort.RECENTLY_UPDATED,
                 projects = listOf(
                     project,
-                    testProject(id = "2", name = "Clinic Access Control", status = ProjectStatus.ON_HOLD, customerName = "Riverside Health", siteName = "Main clinic")
-                        .copy(reference = "RH-2026-031"),
+                    testProject(id = "2", name = "Clinic Access Control", status = ProjectStatus.IN_PROGRESS, customerName = "Riverside Health", siteName = "Main clinic")
+                        .copy(startDate = today.minusDays(5), endDate = today.plusDays(9), updatedAt = Instant.now().minus(2, ChronoUnit.HOURS)),
                     testProject(id = "3", name = "Office Network Refit", status = ProjectStatus.COMPLETED, customerName = "Carter & Webb", siteName = "Level 3")
-                        .copy(reference = "CW-2026-007"),
+                        .copy(startDate = today.minusDays(40), endDate = today.minusDays(12), updatedAt = Instant.now().minus(3, ChronoUnit.DAYS)),
                 ),
                 summary = ProjectSummary(20, 14, 6, 3, 4, 9, 1, 3, 2),
+                today = today,
             ),
             query = "",
             onQueryChange = {},
             onFilterSelected = {},
             onSortSelected = {},
-            onBack = {},
             onProjectClick = { _: ProjectId -> },
+            onEditProject = { _: ProjectId -> },
             onCreateProject = {},
         )
     }

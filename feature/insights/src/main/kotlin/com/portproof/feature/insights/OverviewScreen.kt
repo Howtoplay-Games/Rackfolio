@@ -7,13 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -31,7 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.portproof.core.designsystem.component.PpCard
 import com.portproof.core.designsystem.component.PpHighlight
 import com.portproof.core.designsystem.component.PpListScreen
-import com.portproof.core.designsystem.component.PpScreenHeader
+import com.portproof.core.designsystem.component.PpTopBar
 import com.portproof.core.designsystem.component.PpSectionHeader
 import com.portproof.core.designsystem.component.PpStatCard
 import com.portproof.core.designsystem.component.PpTextLink
@@ -52,7 +49,6 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 internal data class OverviewActions(
-    val onBack: () -> Unit,
     val onOpenProjects: (ProjectListFilter) -> Unit,
     val onOpenProject: (ProjectId) -> Unit,
     val onOpenActivity: () -> Unit,
@@ -72,11 +68,10 @@ internal fun OverviewScreen(state: OverviewUiState, actions: OverviewActions) {
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = spacing.screenGutter)
-                .windowInsetsPadding(WindowInsets.navigationBars),
+                .padding(horizontal = spacing.screenGutter),
             verticalArrangement = Arrangement.spacedBy(spacing.md),
         ) {
-            PpScreenHeader(stringResource(R.string.overview_title), onBack = actions.onBack)
+            PpTopBar(stringResource(R.string.overview_title))
             if (state.isLoading) return@Column
             StatRow(
                 { PpStatCard(stringResource(R.string.overview_active), s.active.toString(), it, onClick = { actions.onOpenProjects(ProjectListFilter.ACTIVE) }) },
@@ -129,7 +124,7 @@ private fun UpdatesCard(insights: ActivityInsights, modifier: Modifier) {
 @Composable
 private fun Deadlines(state: OverviewUiState, onOpenProject: (ProjectId) -> Unit) {
     PpSectionHeader(stringResource(R.string.overview_deadlines))
-    PpCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)) {
+    PpCard(Modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)) {
         if (state.deadlines.isEmpty()) {
             Text(
                 stringResource(R.string.overview_no_deadlines),
@@ -184,7 +179,7 @@ private fun RecentActivity(state: OverviewUiState, actions: OverviewActions) {
         stringResource(R.string.overview_recent),
         action = { PpTextLink(stringResource(R.string.overview_see_all), actions.onOpenActivity) },
     )
-    PpCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)) {
+    PpCard(Modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)) {
         if (state.recentActivity.isEmpty()) {
             Text(
                 stringResource(R.string.overview_no_activity),

@@ -1,6 +1,7 @@
 package com.portproof.feature.settings
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -38,7 +39,11 @@ import com.portproof.core.designsystem.component.PpSectionHeader
 import com.portproof.core.designsystem.component.PpSegmentedControl
 import com.portproof.core.designsystem.component.PpTextField
 import com.portproof.core.designsystem.component.PpListScreen
-import com.portproof.core.designsystem.component.PpScreenHeader
+import com.portproof.core.designsystem.component.PpTopBar
+import com.portproof.core.designsystem.component.PpIconTile
+import com.portproof.core.designsystem.component.PpPrimaryButton
+import com.portproof.core.model.AppPlan
+import com.portproof.core.model.activeProjectLimit
 import com.portproof.core.designsystem.icon.PortProofIcons
 import com.portproof.core.designsystem.theme.PortProofTheme
 import com.portproof.core.model.ThemeMode
@@ -46,15 +51,16 @@ import com.portproof.core.model.UserPreferences
 import com.portproof.core.ui.R as UiR
 
 @Composable
-internal fun SettingsRoute(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
+internal fun SettingsRoute(onOpenPro: () -> Unit, onOpenSecurity: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val ready = state as? SettingsUiState.Ready ?: return
     SettingsScreen(
-        preferences = ready.preferences,
+        state = ready,
         appVersion = rememberAppVersion(),
         onUpdateProfile = viewModel::updateProfile,
         onThemeSelected = viewModel::setThemeMode,
-        onBack = onBack,
+        onOpenPro = onOpenPro,
+        onOpenSecurity = onOpenSecurity,
     )
 }
 
@@ -68,12 +74,14 @@ private fun rememberAppVersion(): String {
 
 @Composable
 internal fun SettingsScreen(
-    preferences: UserPreferences,
+    state: SettingsUiState.Ready,
     appVersion: String,
     onUpdateProfile: (ProfileField, String) -> Boolean,
     onThemeSelected: (ThemeMode) -> Unit,
-    onBack: () -> Unit,
+    onOpenPro: () -> Unit,
+    onOpenSecurity: () -> Unit,
 ) {
+    val preferences = state.preferences
     val spacing = PortProofTheme.spacing
     var editing by rememberSaveable { mutableStateOf<ProfileField?>(null) }
     PpListScreen {
@@ -84,8 +92,10 @@ internal fun SettingsScreen(
                 .padding(horizontal = spacing.screenGutter),
             verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
         ) {
-            PpScreenHeader(stringResource(R.string.settings_title), onBack = onBack)
+            PpTopBar(stringResource(R.string.settings_title))
+            PlanCard(state.plan, state.activeProjects, onOpenPro)
             ProfileCard(preferences) { editing = it }
+            SecurityCard(onOpenSecurity)
             AppearanceCard(preferences.themeMode, onThemeSelected)
             PrivacyCard()
             AboutCard(appVersion)
@@ -123,6 +133,52 @@ private fun ProfileCard(preferences: UserPreferences, onEdit: (ProfileField) -> 
             style = MaterialTheme.typography.bodySmall,
             color = PortProofTheme.colors.textMuted,
             modifier = Modifier.padding(vertical = 8.dp),
+        )
+    }
+}
+
+/** Current plan, with the way to PortProof Pro (or to managing it). */
+@Composable
+private fun PlanCard(plan: AppPlan, activeProjects: Int, onOpenPro: () -> Unit) {
+    val colors = PortProofTheme.colors
+    val limit = plan.activeProjectLimit
+    PpCard(glow = true) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            PpIconTile(PortProofIcons.Crown, size = 44.dp, iconSize = 20.dp, containerColor = colors.accent, tint = colors.onAccent)
+            Column(Modifier.weight(1f)) {
+                Text(
+                    stringResource(if (limit == null) R.string.settings_plan_pro else R.string.settings_plan_free),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = colors.textPrimary,
+                )
+                Text(
+                    if (limit == null) {
+                        stringResource(R.string.settings_plan_pro_body)
+                    } else {
+                        pluralStringResource(R.plurals.settings_plan_free_body, limit, activeProjects.coerceAtMost(limit), limit)
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.textSecondary,
+                )
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        PpPrimaryButton(
+            stringResource(if (limit == null) R.string.settings_plan_manage else R.string.settings_plan_upgrade),
+            onOpenPro,
+            Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+@Composable
+private fun SecurityCard(onOpenSecurity: () -> Unit) {
+    PpCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
+        PpListRow(
+            title = stringResource(R.string.settings_security),
+            icon = PortProofIcons.Lock,
+            value = stringResource(R.string.settings_security_body),
+            onClick = onOpenSecurity,
         )
     }
 }
@@ -199,7 +255,7 @@ private fun ProfileDialog(field: ProfileField, current: String, onDismiss: () ->
         },
         confirmButton = {
             TextButton(onClick = { tooLong = !onSave(text) }) {
-                Text(stringResource(UiR.string.ui_action_save), color = colors.accent)
+                Text(stringResource(UiR.string.ui_action_save), color = colors.accentText)
             }
         },
         dismissButton = {

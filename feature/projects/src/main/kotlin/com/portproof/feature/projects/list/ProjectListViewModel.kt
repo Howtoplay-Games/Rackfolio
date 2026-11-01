@@ -13,6 +13,8 @@ import com.portproof.core.model.ProjectSort
 import com.portproof.core.model.ProjectSummary
 import com.portproof.feature.projects.navigation.ProjectArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.Clock
+import java.time.LocalDate
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -31,6 +33,7 @@ data class ProjectListUiState(
     val sort: ProjectSort = ProjectSort.RECENTLY_UPDATED,
     val projects: List<Project> = emptyList(),
     val summary: ProjectSummary = ProjectSummary.Empty,
+    val today: LocalDate = LocalDate.MIN,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -38,7 +41,9 @@ data class ProjectListUiState(
 class ProjectListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     projectRepository: ProjectRepository,
+    clock: Clock,
 ) : ViewModel() {
+    private val today = LocalDate.now(clock)
 
     /** Compose state (not a StateFlow) so the search field updates synchronously while typing. */
     var query by mutableStateOf(savedStateHandle.get<String>(KEY_QUERY).orEmpty())
@@ -48,11 +53,15 @@ class ProjectListViewModel @Inject constructor(
         KEY_SELECTED_FILTER,
         ProjectListFilter.fromCode(savedStateHandle.get<String>(ProjectArgs.FILTER))?.code ?: ProjectListFilter.ALL.code,
     )
-    private val sort = savedStateHandle.getStateFlow(KEY_SORT, ProjectSort.RECENTLY_UPDATED.code)
+    private val sort = savedStateHandle.getStateFlow(
+        KEY_SORT,
+        ProjectSort.fromCode(savedStateHandle.get<String>(ProjectArgs.SORT))?.code ?: ProjectSort.RECENTLY_UPDATED.code,
+    )
 
     /** Mirror of [query] that drives the list pipeline independently of Compose snapshots. */
     private val queryFlow = MutableStateFlow(query)
-    private val debouncedQuery = queryFlow.debounce(QUERY_DEBOUNCE_MS).distinctUntilChanged()
+    /** Typing is debounced; an empty query (opening the screen, clearing the field) applies at once. */
+    private val debouncedQuery = queryFlow.debounce { if (it.isBlank()) 0L else QUERY_DEBOUNCE_MS }.distinctUntilChanged()
 
     val uiState: StateFlow<ProjectListUiState> = combine(filter, sort, debouncedQuery) { f, s, q -> Triple(f, s, q) }
         .flatMapLatest { (filterCode, sortCode, q) ->
@@ -68,10 +77,11 @@ class ProjectListViewModel @Inject constructor(
                     sort = selectedSort,
                     projects = projects,
                     summary = summary,
+                    today = today,
                 )
             }
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ProjectListUiState())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ProjectListUiState(today = today))
 
     fun onQueryChange(value: String) {
         query = value

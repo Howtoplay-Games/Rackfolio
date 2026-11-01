@@ -1,13 +1,16 @@
 package com.portproof.feature.projects.editor
 
 import androidx.lifecycle.SavedStateHandle
+import com.portproof.core.model.AppPlan
 import com.portproof.core.model.FieldError
 import com.portproof.core.model.ProjectField
 import com.portproof.core.model.ProjectId
 import com.portproof.core.model.ProjectStatus
 import com.portproof.core.testing.MainDispatcherRule
+import com.portproof.core.testing.TestPlanRepository
 import com.portproof.core.testing.TestProjectRepository
 import com.portproof.core.testing.testProject
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -23,11 +26,12 @@ class ProjectEditorViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val repository = TestProjectRepository()
+    private val plans = TestPlanRepository(AppPlan.Pro)
 
-    private fun newEditor(handle: SavedStateHandle = SavedStateHandle()) = ProjectEditorViewModel(handle, repository)
+    private fun newEditor(handle: SavedStateHandle = SavedStateHandle()) = ProjectEditorViewModel(handle, repository, plans)
 
     private fun editorFor(id: String, handle: SavedStateHandle = SavedStateHandle(mapOf("projectId" to id))) =
-        ProjectEditorViewModel(handle, repository)
+        ProjectEditorViewModel(handle, repository, plans)
 
     @Test
     fun savingWithoutNameShowsErrorAndCreatesNothing() = runTest {
@@ -117,5 +121,38 @@ class ProjectEditorViewModelTest {
         val restored = editorFor("p1", handle) // same SavedStateHandle contents, new ViewModel
         assertEquals("Edited before process death", restored.form.name)
         assertTrue(restored.hasUnsavedChanges)
+    }
+
+    @Test
+    fun freePlanAtItsLimitShowsTheNoticeOnlyForProjectsThatWouldBeActive() = runTest {
+        plans.current.value = AppPlan.Free(activeProjectLimit = 1)
+        repository.setProjects(listOf(testProject(id = "busy", status = ProjectStatus.IN_PROGRESS)))
+        val vm = newEditor()
+        advanceUntilIdle()
+        assertEquals(1, vm.limitNotice)
+
+        // A project recorded as completed does not count towards the limit.
+        vm.onStatusChange(ProjectStatus.COMPLETED)
+        assertNull(vm.limitNotice)
+
+        plans.current.value = AppPlan.Pro
+        vm.onStatusChange(ProjectStatus.PLANNED)
+        advanceUntilIdle()
+        assertNull(vm.limitNotice)
+    }
+
+    @Test
+    fun saveRefusedByThePlanLimitKeepsTheFormAndSaysWhy() = runTest {
+        plans.current.value = AppPlan.Free(activeProjectLimit = 1)
+        repository.activeLimit = 1
+        repository.setProjects(listOf(testProject(id = "busy", status = ProjectStatus.IN_PROGRESS)))
+        val vm = newEditor()
+        vm.onNameChange("Second site")
+        vm.save()
+        advanceUntilIdle()
+        assertEquals(EditorMessage.LimitReached, vm.message)
+        assertNull(vm.savedProjectId)
+        assertEquals("Second site", vm.form.name)
+        assertTrue(vm.hasUnsavedChanges)
     }
 }

@@ -1,5 +1,6 @@
 package com.portproof.feature.projects.detail
 
+import com.portproof.core.model.ScheduleState
 import com.portproof.core.model.Project
 import com.portproof.core.model.ProjectStatus
 import java.time.LocalDate

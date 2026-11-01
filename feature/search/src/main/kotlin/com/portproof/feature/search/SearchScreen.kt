@@ -25,24 +25,25 @@ import androidx.compose.ui.focus.FocusRequester
 import com.portproof.core.designsystem.component.PpEmptyState
 import com.portproof.core.designsystem.component.PpSearchField
 import com.portproof.core.designsystem.component.PpListScreen
-import com.portproof.core.designsystem.component.PpScreenHeader
+import com.portproof.core.designsystem.component.PpTopBar
 import com.portproof.core.designsystem.icon.PortProofIcons
 import com.portproof.core.designsystem.theme.PortProofTheme
 import com.portproof.core.model.ProjectId
 import com.portproof.core.ui.ProjectCard
+import java.time.LocalDate
 
 @Composable
-internal fun SearchRoute(onBack: () -> Unit, onOpenProject: (ProjectId) -> Unit, viewModel: SearchViewModel = hiltViewModel()) {
+internal fun SearchRoute(onOpenProject: (ProjectId) -> Unit, viewModel: SearchViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    SearchScreen(state, viewModel.query, viewModel::onQueryChange, onBack, onOpenProject)
+    SearchScreen(state, viewModel.query, viewModel.today, viewModel::onQueryChange, onOpenProject)
 }
 
 @Composable
 internal fun SearchScreen(
     state: SearchUiState,
     query: String,
+    today: LocalDate,
     onQueryChange: (String) -> Unit,
-    onBack: () -> Unit,
     onOpenProject: (ProjectId) -> Unit,
 ) {
     val spacing = PortProofTheme.spacing
@@ -51,7 +52,7 @@ internal fun SearchScreen(
     LaunchedEffect(Unit) { if (query.isEmpty()) focusRequester.requestFocus() }
     PpListScreen(Modifier.imePadding()) {
         Column(Modifier.padding(horizontal = spacing.screenGutter)) {
-            PpScreenHeader(stringResource(R.string.search_title), onBack = onBack)
+            PpTopBar(stringResource(R.string.search_title))
             PpSearchField(
                 query = query,
                 onQueryChange = onQueryChange,
@@ -86,7 +87,7 @@ internal fun SearchScreen(
                         )
                     }
                     items(state.projects, key = { it.id.value }) { project ->
-                        ProjectCard(project, onClick = { onOpenProject(project.id) })
+                        ProjectCard(project, today, onClick = { onOpenProject(project.id) })
                     }
                 }
             }

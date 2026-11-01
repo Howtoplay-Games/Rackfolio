@@ -2,6 +2,13 @@ package com.portproof.feature.projects.editor
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import com.portproof.core.designsystem.component.PpSecondaryButton
+import com.portproof.core.designsystem.component.PpIconTile
+import androidx.compose.material3.Text
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -48,6 +55,7 @@ import com.portproof.core.ui.R as UiR
 internal fun ProjectEditorRoute(
     onClose: () -> Unit,
     onSaved: (ProjectId, Boolean) -> Unit,
+    onOpenPro: () -> Unit,
     viewModel: ProjectEditorViewModel = hiltViewModel(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -65,10 +73,21 @@ internal fun ProjectEditorRoute(
     }
     val fixFields = stringResource(R.string.project_error_fix_fields)
     val saveFailed = stringResource(UiR.string.ui_error_not_saved)
+    val seePro = stringResource(UiR.string.ui_action_see_pro)
+    val limitText = pluralStringResource(UiR.plurals.ui_limit_reached, viewModel.limitNotice ?: 0, viewModel.limitNotice ?: 0)
+    // Consume the message only after the snackbar is gone: clearing it first would change this
+    // effect's key and cancel the snackbar straight away.
     LaunchedEffect(viewModel.message) {
         val message = viewModel.message ?: return@LaunchedEffect
+        when (message) {
+            EditorMessage.FixFields -> snackbarHostState.showSnackbar(fixFields)
+            EditorMessage.SaveFailed -> snackbarHostState.showSnackbar(saveFailed)
+            EditorMessage.LimitReached -> {
+                val result = snackbarHostState.showSnackbar(limitText, seePro, withDismissAction = true, duration = SnackbarDuration.Long)
+                if (result == SnackbarResult.ActionPerformed) onOpenPro()
+            }
+        }
         viewModel.onMessageShown()
-        snackbarHostState.showSnackbar(if (message == EditorMessage.FixFields) fixFields else saveFailed)
     }
 
     ProjectEditorScreen(
@@ -77,9 +96,11 @@ internal fun ProjectEditorRoute(
         form = viewModel.form,
         errors = viewModel.errors,
         isSaving = viewModel.isSaving,
+        limitNotice = viewModel.limitNotice,
         snackbarHostState = snackbarHostState,
         callbacks = EditorCallbacks(
             onClose = requestClose,
+            onOpenPro = onOpenPro,
             onSave = viewModel::save,
             onName = viewModel::onNameChange,
             onReference = viewModel::onReferenceChange,
@@ -111,6 +132,7 @@ internal fun ProjectEditorRoute(
 
 internal data class EditorCallbacks(
     val onClose: () -> Unit,
+    val onOpenPro: () -> Unit,
     val onSave: () -> Unit,
     val onName: (String) -> Unit,
     val onReference: (String) -> Unit,
@@ -141,6 +163,7 @@ internal fun ProjectEditorScreen(
     form: ProjectForm,
     errors: Map<ProjectField, FieldError>,
     isSaving: Boolean,
+    limitNotice: Int?,
     snackbarHostState: SnackbarHostState,
     callbacks: EditorCallbacks,
 ) {
@@ -175,11 +198,31 @@ internal fun ProjectEditorScreen(
                         .padding(horizontal = spacing.screenGutter, vertical = spacing.md),
                     verticalArrangement = Arrangement.spacedBy(spacing.md),
                 ) {
+                    if (limitNotice != null) LimitNotice(limitNotice, callbacks.onOpenPro)
                     EditorFields(form, errors, callbacks)
                 }
             }
         }
         SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter).padding(bottom = 96.dp))
+    }
+}
+
+/** Shown while the free plan has no room for the active project this form would add. */
+@Composable
+private fun LimitNotice(limit: Int, onOpenPro: () -> Unit) {
+    val colors = PortProofTheme.colors
+    PpCard(Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            PpIconTile(PortProofIcons.Crown, size = 40.dp, iconSize = 18.dp, containerColor = colors.accentContainer, tint = colors.onAccentContainer)
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(
+                    pluralStringResource(UiR.plurals.ui_limit_reached, limit, limit),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colors.textPrimary,
+                )
+                PpSecondaryButton(stringResource(R.string.project_editor_see_pro), onOpenPro)
+            }
+        }
     }
 }
 

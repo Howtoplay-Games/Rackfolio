@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.portproof.core.data.repository.ProjectRepository
 import com.portproof.core.model.Project
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.Clock
+import java.time.LocalDate
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -32,7 +34,11 @@ sealed interface SearchUiState {
 class SearchViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     projectRepository: ProjectRepository,
+    clock: Clock,
 ) : ViewModel() {
+
+    /** Date the result cards measure schedules against. */
+    val today: LocalDate = LocalDate.now(clock)
 
     /** Compose state for the text field (synchronous updates while typing). */
     var query by mutableStateOf(savedStateHandle.get<String>(KEY_QUERY).orEmpty())

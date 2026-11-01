@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Project overview -->
-    <string name="overview_title">Project\noverview</string>
+    <string name="overview_title">Overview</string>
     <string name="overview_active">Active\nprojects</string>
     <string name="overview_completed">Completed\nprojects</string>
     <string name="overview_planned">Planned\nprojects</string>
