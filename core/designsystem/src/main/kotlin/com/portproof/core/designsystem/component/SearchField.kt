@@ -42,8 +42,8 @@ fun PpSearchField(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 48.dp),
-        shape = PortProofTheme.shapes.pill,
+            .heightIn(min = 52.dp),
+        shape = PortProofTheme.shapes.field,
         color = colors.surface,
     ) {
         Row(
@@ -61,7 +61,7 @@ fun PpSearchField(
                     onValueChange = onQueryChange,
                     singleLine = true,
                     textStyle = MaterialTheme.typography.bodyLarge.copy(color = colors.textPrimary),
-                    cursorBrush = SolidColor(colors.accent),
+                    cursorBrush = SolidColor(colors.accentText),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
                     modifier = fieldModifier

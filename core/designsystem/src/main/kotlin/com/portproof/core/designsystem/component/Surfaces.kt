@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.layout
@@ -22,24 +23,33 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.portproof.core.designsystem.theme.PortProofTheme
 
-/** White card with 20dp corners on the tinted canvas, as the reference document card. */
+/**
+ * White card with 20dp corners on the warm canvas. [glow] adds the reference meal cards' faint peach
+ * wash at the bottom edge.
+ */
 @Composable
 fun PpCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     contentPadding: PaddingValues = PaddingValues(16.dp),
+    glow: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val colors = PortProofTheme.colors
     val shape = PortProofTheme.shapes.card
     val border = if (colors.isDark) BorderStroke(1.dp, colors.border) else null
+    val inner = if (glow) {
+        Modifier.background(Brush.verticalGradient(0.55f to colors.surface, 1f to colors.cardGlow))
+    } else {
+        Modifier
+    }
     if (onClick != null) {
         Surface(onClick = onClick, modifier = modifier, shape = shape, color = colors.surface, border = border) {
-            Column(Modifier.padding(contentPadding), content = content)
+            Column(inner.padding(contentPadding), content = content)
         }
     } else {
         Surface(modifier = modifier, shape = shape, color = colors.surface, border = border) {
-            Column(Modifier.padding(contentPadding), content = content)
+            Column(inner.padding(contentPadding), content = content)
         }
     }
 }
@@ -79,23 +89,6 @@ fun PpIconTile(
 @Composable
 fun PpDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(modifier = modifier, thickness = 1.dp, color = PortProofTheme.colors.divider)
-}
-
-/** Semantic colour roles for chips and status indicators. */
-enum class PpTone { Neutral, Accent, Success, Warning, Danger }
-
-data class PpToneColors(val content: Color, val container: Color, val indicator: Color)
-
-@Composable
-fun PpTone.colors(): PpToneColors {
-    val c = PortProofTheme.colors
-    return when (this) {
-        PpTone.Neutral -> PpToneColors(c.textSecondary, c.surfaceSunken, c.textMuted)
-        PpTone.Accent -> PpToneColors(c.onAccentContainer, c.accentContainer, c.accent)
-        PpTone.Success -> PpToneColors(c.successText, c.successContainer, c.success)
-        PpTone.Warning -> PpToneColors(c.warningText, c.warningContainer, c.warning)
-        PpTone.Danger -> PpToneColors(c.dangerText, c.dangerContainer, c.danger)
-    }
 }
 
 /**

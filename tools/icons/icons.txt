@@ -61,3 +61,16 @@ chart-no-axes-column BarChart
 chevron-left ChevronLeft
 ellipsis Ellipsis
 layout-grid Grid
+# Warm redesign: bottom bar, dashboard gauge, login and PortProof Pro
+scan-search ScanSearch
+book-open BookOpen
+chart-pie PieChart
+zap Zap
+lock-keyhole Lock
+fingerprint-pattern Fingerprint
+delete Backspace
+key-round Key
+crown Crown
+infinity Infinity
+badge-check BadgeCheck
+wifi-off WifiOff

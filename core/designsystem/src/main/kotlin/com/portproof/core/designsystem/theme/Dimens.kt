@@ -27,18 +27,20 @@ data class PortProofSpacing(
     val maxContentWidth: Dp = 880.dp,
 )
 
-/** Corner radii taken from the reference: 24dp glass tiles, 20dp document cards, pill controls. */
+/** Corner radii taken from the reference: 20dp cards, 18dp tiles, 14dp square buttons, rounded bottom bar. */
 @Immutable
 data class PortProofShapes(
-    val tile: RoundedCornerShape = RoundedCornerShape(24.dp),
+    val tile: RoundedCornerShape = RoundedCornerShape(18.dp),
     val card: RoundedCornerShape = RoundedCornerShape(20.dp),
-    val panel: RoundedCornerShape = RoundedCornerShape(16.dp),
+    val panel: RoundedCornerShape = RoundedCornerShape(14.dp),
     val sheet: RoundedCornerShape = RoundedCornerShape(28.dp),
-    val header: RoundedCornerShape = RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp),
+    val header: RoundedCornerShape = RoundedCornerShape(0.dp),
     val highlight: RoundedCornerShape = RoundedCornerShape(4.dp),
-    val control: RoundedCornerShape = RoundedCornerShape(percent = 50),
-    val input: RoundedCornerShape = RoundedCornerShape(percent = 50),
-    val field: RoundedCornerShape = RoundedCornerShape(16.dp),
+    /** Square icon buttons and primary buttons. */
+    val control: RoundedCornerShape = RoundedCornerShape(14.dp),
+    val input: RoundedCornerShape = RoundedCornerShape(14.dp),
+    val field: RoundedCornerShape = RoundedCornerShape(14.dp),
+    val bar: RoundedCornerShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
     val pill: RoundedCornerShape = RoundedCornerShape(percent = 50),
 )
 

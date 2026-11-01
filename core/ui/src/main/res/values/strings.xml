@@ -26,17 +26,34 @@
     <string name="ui_activity_deleted_project">Deleted project</string>
 
     <!-- Greeting -->
-    <string name="ui_greeting_morning">Good morning</string>
-    <string name="ui_greeting_afternoon">Good afternoon</string>
-    <string name="ui_greeting_evening">Good evening</string>
 
     <!-- Relative time -->
     <string name="ui_time_just_now">Just now</string>
     <string name="ui_updated">Updated %1$s</string>
     <string name="ui_no_dates">No dates set</string>
-    <string name="ui_date_from">From %1$s</string>
-    <string name="ui_date_until">Until %1$s</string>
     <string name="ui_unnamed_customer">No customer</string>
+
+    <!-- Project card (reference meal-card layout) -->
+    <string name="ui_card_start">Start</string>
+    <string name="ui_card_due">Due</string>
+    <string name="ui_card_status">Status</string>
+    <string name="ui_card_not_set">Not set</string>
+    <string name="ui_card_percent">%1$d%%</string>
+    <string name="ui_card_day_of">Day %1$d of %2$d</string>
+    <plurals name="ui_card_days">
+        <item quantity="one">day</item>
+        <item quantity="other">days</item>
+    </plurals>
+    <string name="ui_card_until_start">until start</string>
+    <string name="ui_card_overdue">overdue</string>
+    <string name="ui_action_edit_project">Edit %1$s</string>
+
+    <!-- Free plan limit. %1$d = active-project limit -->
+    <plurals name="ui_limit_reached">
+        <item quantity="one">The free plan includes %1$d active project. Complete or archive one, or upgrade to PortProof Pro.</item>
+        <item quantity="other">The free plan includes %1$d active projects. Complete or archive one, or upgrade to PortProof Pro.</item>
+    </plurals>
+    <string name="ui_action_see_pro">See Pro</string>
 
     <string name="ui_error_generic">Something went wrong. Please try again.</string>
     <string name="ui_error_not_saved">Couldn\'t save your changes. Nothing was lost; please try again.</string>

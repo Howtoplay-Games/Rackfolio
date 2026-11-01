@@ -39,12 +39,3 @@ fun relativeTime(instant: Instant, now: Long = System.currentTimeMillis()): Stri
     return DateUtils.getRelativeTimeSpanString(millis, now, DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE)
         .toString()
 }
-
-/** "12 Mar 2026 – 30 Apr 2026", "From 12 Mar 2026", or null when no dates are set. */
-@Composable
-fun formatDateRange(start: LocalDate?, end: LocalDate?): String? = when {
-    start != null && end != null -> "${formatDate(start)} – ${formatDate(end)}"
-    start != null -> stringResource(R.string.ui_date_from, formatDate(start))
-    end != null -> stringResource(R.string.ui_date_until, formatDate(end))
-    else -> null
-}

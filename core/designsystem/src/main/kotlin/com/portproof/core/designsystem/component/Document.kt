@@ -42,7 +42,7 @@ fun PpSegmentedProgress(segments: Int, filled: Int, modifier: Modifier = Modifie
     Canvas(
         modifier
             .fillMaxWidth()
-            .height(5.dp)
+            .height(6.dp)
             .semantics { progressBarRangeInfo = ProgressBarRangeInfo(filled.toFloat(), 0f..segments.toFloat(), segments) },
     ) {
         val gap = 5.dp.toPx()
@@ -58,7 +58,7 @@ fun PpSegmentedProgress(segments: Int, filled: Int, modifier: Modifier = Modifie
     }
 }
 
-/** White card overlapping a gradient header: accent icon circle, title, caption, segmented progress. */
+/** White status card under a detail title: orange icon square, title, caption, segmented progress. */
 @Composable
 fun PpReviewCard(
     icon: ImageVector,
@@ -73,8 +73,8 @@ fun PpReviewCard(
     val colors = PortProofTheme.colors
     val body: @Composable () -> Unit = {
         Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(44.dp).background(colors.accent, PortProofTheme.shapes.pill), contentAlignment = Alignment.Center) {
-                Icon(icon, null, tint = Color.White, modifier = Modifier.size(20.dp))
+            Box(Modifier.size(46.dp).background(colors.accent, PortProofTheme.shapes.control), contentAlignment = Alignment.Center) {
+                Icon(icon, null, tint = colors.onAccent, modifier = Modifier.size(21.dp))
             }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {

@@ -30,7 +30,7 @@ fun PpConfirmDialog(
                 Text(
                     confirmLabel,
                     style = MaterialTheme.typography.labelLarge,
-                    color = if (destructive) colors.dangerText else colors.accent,
+                    color = if (destructive) colors.dangerText else colors.accentText,
                 )
             }
         },

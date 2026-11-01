@@ -526,6 +526,118 @@ object PortProofIcons {
             "M4 14h5a1 1 0 0 1 1 1v5a1 1 0 0 1 -1 1h-5a1 1 0 0 1 -1 -1v-5a1 1 0 0 1 1 -1Z",
         )
     }
+
+    val ScanSearch: ImageVector by lazy {
+        lucideIcon(
+            "ScanSearch",
+            "M3 7V5a2 2 0 0 1 2-2h2",
+            "M17 3h2a2 2 0 0 1 2 2v2",
+            "M21 17v2a2 2 0 0 1-2 2h-2",
+            "M7 21H5a2 2 0 0 1-2-2v-2",
+            "M9 12a3 3 0 1 0 6 0a3 3 0 1 0 -6 0",
+            "m16 16-1.9-1.9",
+        )
+    }
+
+    val BookOpen: ImageVector by lazy {
+        lucideIcon(
+            "BookOpen",
+            "M12 5v16",
+            "M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z",
+        )
+    }
+
+    val PieChart: ImageVector by lazy {
+        lucideIcon(
+            "PieChart",
+            "M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z",
+            "M21.21 15.89A10 10 0 1 1 8 2.83",
+        )
+    }
+
+    val Zap: ImageVector by lazy {
+        lucideIcon(
+            "Zap",
+            "M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z",
+        )
+    }
+
+    val Lock: ImageVector by lazy {
+        lucideIcon(
+            "Lock",
+            "M11 16a1 1 0 1 0 2 0a1 1 0 1 0 -2 0",
+            "M5 10h14a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2Z",
+            "M7 10V7a5 5 0 0 1 10 0v3",
+        )
+    }
+
+    val Fingerprint: ImageVector by lazy {
+        lucideIcon(
+            "Fingerprint",
+            "M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4",
+            "M14 13.12c0 2.38 0 6.38-1 8.88",
+            "M17.29 21.02c.12-.6.43-2.3.5-3.02",
+            "M2 12a10 10 0 0 1 18-6",
+            "M2 16h.01",
+            "M21.8 16c.2-2 .131-5.354 0-6",
+            "M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2",
+            "M8.65 22c.21-.66.45-1.32.57-2",
+            "M9 6.8a6 6 0 0 1 9 5.2v2",
+        )
+    }
+
+    val Backspace: ImageVector by lazy {
+        lucideIcon(
+            "Backspace",
+            "M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z",
+            "m12 9 6 6",
+            "m18 9-6 6",
+        )
+    }
+
+    val Key: ImageVector by lazy {
+        lucideIcon(
+            "Key",
+            "M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z",
+            "M16 7.5a0.5 0.5 0 1 0 1 0a0.5 0.5 0 1 0 -1 0",
+        )
+    }
+
+    val Crown: ImageVector by lazy {
+        lucideIcon(
+            "Crown",
+            "M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z",
+            "M5 21h14",
+        )
+    }
+
+    val Infinity: ImageVector by lazy {
+        lucideIcon(
+            "Infinity",
+            "M6 16c5 0 7-8 12-8a4 4 0 0 1 0 8c-5 0-7-8-12-8a4 4 0 1 0 0 8",
+        )
+    }
+
+    val BadgeCheck: ImageVector by lazy {
+        lucideIcon(
+            "BadgeCheck",
+            "M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z",
+            "m16 9-5.5 5.5L8 12",
+        )
+    }
+
+    val WifiOff: ImageVector by lazy {
+        lucideIcon(
+            "WifiOff",
+            "M12 20h.01",
+            "M8.5 16.429a5 5 0 0 1 7 0",
+            "M5 12.859a10 10 0 0 1 5.17-2.69",
+            "M19 12.859a10 10 0 0 0-2.007-1.523",
+            "M2 8.82a15 15 0 0 1 4.177-2.643",
+            "M22 8.82a15 15 0 0 0-11.288-3.764",
+            "m2 2 20 20",
+        )
+    }
 }
 
 private fun lucideIcon(name: String, vararg paths: String): ImageVector =
