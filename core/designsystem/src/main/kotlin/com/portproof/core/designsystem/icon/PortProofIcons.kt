@@ -500,6 +500,32 @@ object PortProofIcons {
             "M19 21V9",
         )
     }
+
+    val ChevronLeft: ImageVector by lazy {
+        lucideIcon(
+            "ChevronLeft",
+            "m15 18-6-6 6-6",
+        )
+    }
+
+    val Ellipsis: ImageVector by lazy {
+        lucideIcon(
+            "Ellipsis",
+            "M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0",
+            "M18 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0",
+            "M4 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0",
+        )
+    }
+
+    val Grid: ImageVector by lazy {
+        lucideIcon(
+            "Grid",
+            "M4 3h5a1 1 0 0 1 1 1v5a1 1 0 0 1 -1 1h-5a1 1 0 0 1 -1 -1v-5a1 1 0 0 1 1 -1Z",
+            "M15 3h5a1 1 0 0 1 1 1v5a1 1 0 0 1 -1 1h-5a1 1 0 0 1 -1 -1v-5a1 1 0 0 1 1 -1Z",
+            "M15 14h5a1 1 0 0 1 1 1v5a1 1 0 0 1 -1 1h-5a1 1 0 0 1 -1 -1v-5a1 1 0 0 1 1 -1Z",
+            "M4 14h5a1 1 0 0 1 1 1v5a1 1 0 0 1 -1 1h-5a1 1 0 0 1 -1 -1v-5a1 1 0 0 1 1 -1Z",
+        )
+    }
 }
 
 private fun lucideIcon(name: String, vararg paths: String): ImageVector =

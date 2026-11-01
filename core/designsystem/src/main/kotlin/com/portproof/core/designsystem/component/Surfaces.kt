@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.portproof.core.designsystem.theme.PortProofTheme
 
-/** White card with a hairline border and 20dp corners: the basic building block of every screen. */
+/** White card with 20dp corners on the tinted canvas, as the reference document card. */
 @Composable
 fun PpCard(
     modifier: Modifier = Modifier,
@@ -32,7 +32,7 @@ fun PpCard(
 ) {
     val colors = PortProofTheme.colors
     val shape = PortProofTheme.shapes.card
-    val border = BorderStroke(1.dp, colors.border)
+    val border = if (colors.isDark) BorderStroke(1.dp, colors.border) else null
     if (onClick != null) {
         Surface(onClick = onClick, modifier = modifier, shape = shape, color = colors.surface, border = border) {
             Column(Modifier.padding(contentPadding), content = content)

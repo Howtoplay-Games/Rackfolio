@@ -44,7 +44,7 @@ fun PpSearchField(
             .fillMaxWidth()
             .heightIn(min = 48.dp),
         shape = PortProofTheme.shapes.pill,
-        color = colors.surfaceMuted,
+        color = colors.surface,
     ) {
         Row(
             modifier = Modifier.padding(start = 18.dp, end = 6.dp),

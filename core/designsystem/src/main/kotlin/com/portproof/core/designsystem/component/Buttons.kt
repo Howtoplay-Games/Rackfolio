@@ -27,9 +27,10 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.portproof.core.designsystem.icon.PortProofIcons
 import com.portproof.core.designsystem.theme.PortProofTheme
 
-/** Main call to action: black pill (white in the dark theme). Ignores taps while [loading]. */
+/** Black pill with a trailing arrow ("Review risks ->"). White pill in the dark theme. */
 @Composable
 fun PpPrimaryButton(
     text: String,
@@ -37,12 +38,12 @@ fun PpPrimaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     loading: Boolean = false,
-    leadingIcon: ImageVector? = null,
+    trailingIcon: ImageVector? = PortProofIcons.ArrowRight,
 ) {
     val colors = PortProofTheme.colors
     Button(
         onClick = { if (!loading) onClick() },
-        modifier = modifier.heightIn(min = 54.dp),
+        modifier = modifier.heightIn(min = 56.dp),
         enabled = enabled,
         shape = PortProofTheme.shapes.pill,
         colors = ButtonDefaults.buttonColors(
@@ -51,24 +52,26 @@ fun PpPrimaryButton(
             disabledContainerColor = colors.surfaceSunken,
             disabledContentColor = colors.textMuted,
         ),
-        contentPadding = PaddingValues(horizontal = 22.dp, vertical = 14.dp),
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
     ) {
         if (loading) {
             CircularProgressIndicator(Modifier.size(18.dp), color = colors.onInverseSurface, strokeWidth = 2.dp)
         } else {
-            ButtonContent(text, leadingIcon)
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(text, style = MaterialTheme.typography.labelLarge)
+                if (trailingIcon != null) Icon(trailingIcon, contentDescription = null, modifier = Modifier.size(17.dp))
+            }
         }
     }
 }
 
-/** Outlined pill. Use [contentColor] = danger for destructive actions. */
+/** White outlined pill, lower emphasis. Use [contentColor] = danger for destructive actions. */
 @Composable
 fun PpSecondaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    leadingIcon: ImageVector? = null,
     contentColor: Color = PortProofTheme.colors.textPrimary,
 ) {
     OutlinedButton(
@@ -80,88 +83,34 @@ fun PpSecondaryButton(
         colors = ButtonDefaults.outlinedButtonColors(containerColor = PortProofTheme.colors.surface, contentColor = contentColor),
         contentPadding = PaddingValues(horizontal = 18.dp, vertical = 12.dp),
     ) {
-        ButtonContent(text, leadingIcon)
-    }
-}
-
-/** Small black pill inside cards ("Open Project"), as the reference's "Start Now". 48dp touch target. */
-@Composable
-fun PpPillButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val colors = PortProofTheme.colors
-    Box(modifier.heightIn(min = 48.dp), contentAlignment = Alignment.CenterStart) {
-        Surface(onClick = onClick, shape = PortProofTheme.shapes.pill, color = colors.inverseSurface) {
-            Text(
-                text,
-                style = MaterialTheme.typography.labelMedium,
-                color = colors.onInverseSurface,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            )
-        }
-    }
-}
-
-/** Grey text action used in section headers ("See Details"). */
-@Composable
-fun PpTextLink(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Surface(onClick = onClick, modifier = modifier.heightIn(min = 48.dp), color = Color.Transparent) {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 4.dp)) {
-            Text(text, style = MaterialTheme.typography.bodyMedium, color = PortProofTheme.colors.textSecondary)
-        }
-    }
-}
-
-@Composable
-private fun ButtonContent(text: String, leadingIcon: ImageVector?) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-        if (leadingIcon != null) Icon(leadingIcon, contentDescription = null, modifier = Modifier.size(18.dp))
         Text(text, style = MaterialTheme.typography.labelLarge)
     }
 }
 
-/** Soft pill action ("+ New"). 48dp touch target. */
-@Composable
-fun PpChipButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    leadingIcon: ImageVector? = null,
-) {
-    val colors = PortProofTheme.colors
-    Box(modifier.heightIn(min = 48.dp), contentAlignment = Alignment.Center) {
-        Surface(onClick = onClick, shape = PortProofTheme.shapes.pill, color = colors.surfaceMuted) {
-            Row(
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (leadingIcon != null) Icon(leadingIcon, null, tint = colors.textPrimary, modifier = Modifier.size(15.dp))
-                Text(text, style = MaterialTheme.typography.labelLarge, color = colors.textPrimary)
-            }
-        }
-    }
-}
+enum class PpCircleStyle { Dark, Light, Glass, Accent, OnHeader }
 
-enum class PpIconButtonStyle { Soft, Outlined, Filled }
-
-/** Circular icon button (header bell, back arrow). Visual size 44dp inside a 48dp touch target. */
+/** Circular icon button (header actions, the round button beside the search bar). 48dp touch target. */
 @Composable
-fun PpIconButton(
+fun PpCircleButton(
     icon: ImageVector,
     contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    style: PpIconButtonStyle = PpIconButtonStyle.Soft,
+    style: PpCircleStyle = PpCircleStyle.Light,
     visualSize: Dp = 44.dp,
+    iconSize: Dp = 20.dp,
 ) {
     val colors = PortProofTheme.colors
-    val container = when (style) {
-        PpIconButtonStyle.Soft -> colors.surfaceMuted
-        PpIconButtonStyle.Outlined -> colors.surface
-        PpIconButtonStyle.Filled -> colors.inverseSurface
+    val (container, content) = when (style) {
+        PpCircleStyle.Dark -> colors.inverseSurface to colors.onInverseSurface
+        PpCircleStyle.Light -> colors.surface to colors.textPrimary
+        PpCircleStyle.Glass -> colors.glass to colors.textPrimary
+        PpCircleStyle.Accent -> colors.accent to Color.White
+        PpCircleStyle.OnHeader -> Color.Transparent to colors.onHeader
     }
     Box(
         modifier = modifier
-            .size(48.dp)
+            .size(maxOf(48.dp, visualSize))
             .semantics(mergeDescendants = true) {
                 this.contentDescription = contentDescription
                 role = Role.Button
@@ -173,16 +122,21 @@ fun PpIconButton(
             modifier = Modifier.size(visualSize),
             shape = PortProofTheme.shapes.pill,
             color = container,
-            border = if (style == PpIconButtonStyle.Outlined) BorderStroke(1.dp, colors.border) else null,
+            border = if (style == PpCircleStyle.Light || style == PpCircleStyle.Glass) BorderStroke(1.dp, colors.glassBorder) else null,
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = if (style == PpIconButtonStyle.Filled) colors.onInverseSurface else colors.textPrimary,
-                    modifier = Modifier.size(20.dp),
-                )
+                Icon(icon, contentDescription = null, tint = content, modifier = Modifier.size(iconSize))
             }
+        }
+    }
+}
+
+/** Grey text action used in section headers ("See all"). */
+@Composable
+fun PpTextLink(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Surface(onClick = onClick, modifier = modifier.heightIn(min = 48.dp), color = Color.Transparent) {
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 4.dp)) {
+            Text(text, style = MaterialTheme.typography.bodyMedium, color = PortProofTheme.colors.accentStrong)
         }
     }
 }

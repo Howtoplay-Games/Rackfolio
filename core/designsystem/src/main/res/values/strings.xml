@@ -2,6 +2,5 @@
 <resources>
     <string name="designsystem_clear_search">Clear search</string>
     <string name="designsystem_back">Back</string>
-    <string name="designsystem_close">Close</string>
-    <string name="designsystem_navigation">Main navigation</string>
+    <string name="designsystem_close_to_home">Close and return home</string>
 </resources>

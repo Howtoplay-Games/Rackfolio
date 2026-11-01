@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Window colours shown before Compose draws; keep in sync with core/designsystem Color.kt. -->
-    <color name="window_background">#FFF2F3F6</color>
-    <color name="brand_navy">#FF0E1A36</color>
-    <color name="ic_launcher_background">#FF0E1A36</color>
+    <color name="window_background">#FFEEF2FB</color>
+    <color name="brand_icon_background">#FFF8F9FD</color>
+    <color name="ic_launcher_background">#FFF3F5FC</color>
 </resources>
