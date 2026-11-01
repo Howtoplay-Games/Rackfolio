@@ -6,7 +6,8 @@ clean, an architecture review, updated documentation, and a list of remaining is
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 1 | Foundation: project setup, architecture, Gradle, design system, navigation, dashboard, projects, Room | **Done** (1 Nov 2026) |
-| 1b | Interface rebuilt to the second reference design (Home, Insight, Metrics Summary, activity log, five-tab bar) | **Done** (1 Nov 2026) |
+| 1b | Interface rebuilt to the second reference design (Home, Insight, Metrics Summary, activity log, five-tab bar) | **Done** (1 Nov 2026), superseded by 1c |
+| 1c | Interface rebuilt to the third reference design (glass Home hub, gradient project detail with highlighted record, Project overview, no tab bar) | **Done** (1 Nov 2026) |
 | 2 | Equipment management, cable and port mapping, QR generation and scanning | Next |
 | 3 | Commissioning and test records, photo evidence, defect tracking | Planned |
 | 4 | PDF handover reports, CSV export, backup and restore | Planned |
@@ -37,6 +38,18 @@ clean, an architecture review, updated documentation, and a list of remaining is
 - Data additions: upcoming-deadline query and hour-of-day activity insights.
 - 70 automated tests, all passing; Lint clean.
 
+## Phase 1c — interface rebuilt to the third reference design
+
+- New visual language: cool canvas with peach/lavender glow, glass tiles, bracket "P" logo (also
+  the launcher icon), periwinkle gradient headers, white document cards, black pill buttons.
+- Home is the hub (no tab bar): Active/Completed tiles, search pill, *+*, grid button to the
+  Project overview, avatar to Settings.
+- Project detail: status card with schedule and 5-step progress, project record with rule-based
+  highlights (missing data, overdue, due soon, on hold, archived), *Edit project* and a *…* menu.
+- Insight and Metrics Summary merged into one Project overview screen; charts, the floating bar,
+  the navigation rail and the bundled emoji artwork were removed.
+- 75 automated tests, all passing; Lint clean.
+
 ### Remaining issues after Phase 1
 
 | Issue | Plan |
@@ -48,13 +61,13 @@ clean, an architecture review, updated documentation, and a list of remaining is
 | Search folds ASCII case only (`COLLATE NOCASE`) | Phase 5: evaluate FTS4 with a Unicode tokenizer |
 | No in-app open-source licence screen yet | Phase 5, before release (required for the bundled font) |
 | `applicationId` `com.portproof.app` is provisional | Confirm before the first Play upload; it cannot change afterwards |
-| The reference design uses photos of people; PortProof uses initials avatars and 3D artwork | Optional: let users add their own avatar photo (Phase 3, with the photo pipeline) |
-| Metric cards for planned and on-hold projects are not tappable (the project list has no filter for them) | Phase 2: add status filters to the project list |
+| The reference design uses a photo avatar; PortProof uses initials | Optional: let users add their own avatar photo (Phase 3, with the photo pipeline) |
+| Overview cards for planned and on-hold projects are not tappable (the project list has no filter for them) | Phase 2: add status filters to the project list |
 
 ## Phase 2 — equipment, cabling, QR
 
 - Schema v2 (`equipment`, `cable_connections`) with auto-migration and migration tests.
-- Equipment register per project and a global **Equipment** tab (search across projects by name,
+- Equipment register per project and a global **Equipment** screen opened from Home (search across projects by name,
   model, serial number, location, IP/MAC). Validators for IP and MAC addresses.
 - Cable and port mapping: connection editor with equipment pickers limited to the same project,
   port-reuse warning, VLAN range checks. Mapping views: per-equipment port grid (uses
@@ -84,7 +97,7 @@ clean, an architecture review, updated documentation, and a list of remaining is
   generation date), equipment register, cable/port map, test results, defects and resolution
   status, selected photos; repeated table headers, page numbers and footers; generated off the main
   thread with progress and cancellation; in-app preview (`PdfRenderer`) and sharing through
-  `FileProvider` and the Android share sheet. **Reports** tab lists generated reports.
+  `FileProvider` and the Android share sheet. A **Reports** screen, opened from Home, lists generated reports.
 - CSV export (RFC 4180 quoting, UTF-8 with BOM for spreadsheet compatibility, formula-injection
   protection for cells starting with `=`, `+`, `-`, `@`) for equipment, connections, tests and
   defects, saved through the Storage Access Framework.

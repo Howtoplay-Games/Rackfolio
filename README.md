@@ -14,42 +14,49 @@ See [DEVELOPMENT_ROADMAP.md](DEVELOPMENT_ROADMAP.md) for what comes next.
 
 What works today:
 
-- **Home** (layout of the supplied reference design): greeting with the technician's name, a dark
-  *Project Progress* card with a completion ring, *Overview* metric cards (active projects, due
-  this week), and *Active Projects* feature cards with artwork that matches the installation type,
-  plus a card to start a new project.
-- **Insight** (from *See Details*): activity by hour of day over the last 7 days with the busiest
-  hours highlighted, completion progress with a 7-day activity ring row, and upcoming or overdue
-  completion dates.
-- **Insights tab** (*Metrics Summary*): daily-activity chart with the average updates per day, and
-  a grid of project counts that open the matching project list.
-- **Activity log** (bell icon): every recorded change, grouped by day.
+- **Home** (layout of the supplied reference design): bracket "P" logo, greeting with the
+  technician's name and today's date over a soft glow, two glass tiles (*Active projects* with the
+  active count, *Completed projects* with completed/total), a *Search a project* pill and a round
+  *+* button for a new project. The avatar opens Settings and the grid button opens the Project
+  overview. There is no tab bar; Home is the hub.
+- **Project detail** (gradient header screen): status card with the schedule and a 5-step
+  progress bar (tap to change status), and a *Project record* card. Rule-based checks highlight
+  gaps in the record: yellow for a missing customer, site or dates (or an archived project), red
+  for an overdue completion date, orange for a project due within 7 days or on hold. These are
+  fixed rules, not AI. *Edit project* and a *…* menu (archive/restore, delete) sit at the bottom.
+- **Project overview** (grid button): project counts that open the matching list, upcoming and
+  overdue completion dates, and recent activity with *See all* for the full activity log.
 - **Projects:** create, edit, change status, archive/restore (with undo), delete with confirmation.
   Fields: name, reference number, customer, site name and address, start/completion dates,
   description, status. List with filters (All, Active, Completed, Archived), sorting and search.
-- **Search tab:** global project search, including archived projects.
+- **Search:** global project search, including archived projects.
 - **Settings:** technician and company name, light/dark/system theme, privacy information.
 - Room persistence with an activity log, validation of every input, unsaved-change protection,
   and form state that survives process death.
-- Five-item floating navigation bar on phones; navigation rail and two-column Home on tablets.
+- Light and dark themes. On tablets and in landscape, content sits in a centred column (Home at
+  most 600 dp wide, other screens at most 880 dp).
 
 Equipment, cabling, QR codes, tests, photos, defects, PDF/CSV export and backup are **not built
-yet**; they arrive in Phases 2–4. In Phase 2 the Search tab becomes Equipment (search moves into
-the lists), and in Phase 4 the Insights tab grows into Reports.
+yet**; they arrive in Phases 2–4 and will be reached from Home.
 
 ## Screenshots
 
 Rendered by the Robolectric tests (`docs/screenshots/`), not captured on a device.
 
-| Home | Home (dark) | Insight | Metrics Summary |
+| Home | Home (dark) | Project detail | Project overview |
 | --- | --- | --- | --- |
-| ![Home](docs/screenshots/home_light.png) | ![Home dark](docs/screenshots/home_dark.png) | ![Insight](docs/screenshots/insight_light.png) | ![Metrics](docs/screenshots/metrics_light.png) |
+| ![Home](docs/screenshots/home_light.png) | ![Home dark](docs/screenshots/home_dark.png) | ![Project detail](docs/screenshots/project_detail.png) | ![Overview](docs/screenshots/overview_light.png) |
 
-| Projects | Project detail | Activity log | Editor validation |
+| Projects | Editor validation | Search | Settings |
 | --- | --- | --- | --- |
-| ![Projects](docs/screenshots/05_projects_list.png) | ![Project detail](docs/screenshots/03_project_detail.png) | ![Activity](docs/screenshots/activity_log.png) | ![Validation](docs/screenshots/02_editor_validation.png) |
+| ![Projects](docs/screenshots/project_list.png) | ![Validation](docs/screenshots/02_editor_validation.png) | ![Search](docs/screenshots/08_search.png) | ![Settings](docs/screenshots/09_settings.png) |
 
-Tablet layout: [docs/screenshots/home_tablet.png](docs/screenshots/home_tablet.png).
+Also rendered: [first run](docs/screenshots/home_first_run.png),
+[detail (dark)](docs/screenshots/project_detail_dark.png),
+[overview (dark)](docs/screenshots/overview_dark.png),
+[activity log](docs/screenshots/activity_log.png),
+[discard dialog](docs/screenshots/06_discard_dialog.png) and
+[tablet](docs/screenshots/home_tablet.png).
 
 ## Tech stack
 
@@ -84,21 +91,20 @@ Release signing is not configured in the repository by design (see Phase 5).
 ## Project structure
 
 ```
-app/                  Application, MainActivity, navigation shell (bar/rail), nav graph
+app/                  Application, MainActivity, app shell (snackbar host), nav graph
 core/model            Pure Kotlin domain model and validation (no Android)
 core/database         Room database, entities, DAOs, exported schemas
 core/data             Repositories (offline-first), DataStore preferences, DI bindings
 core/designsystem     Theme tokens, Inter font, icon set, reusable components
-core/ui               Domain-aware shared UI (project card, status pill, activity row)
+core/ui               Domain-aware shared UI (project card, status pill, activity row, greeting)
 core/testing          Test fakes, dispatcher rule, screenshot helper
 feature/dashboard     Home screen
-feature/insights      Metrics Summary tab, Insight screen, activity log
+feature/insights      Project overview, activity log
 feature/projects      Project list, detail and editor
 feature/search        Global search
 feature/settings      Settings
 build-logic/          Gradle convention plugins (shared module configuration)
 tools/icons           Icon generator (Lucide SVG -> Compose ImageVector)
-tools/emoji           Fetches the bundled 3D emoji artwork (Fluent, MIT)
 ```
 
 ## Documentation
@@ -108,7 +114,7 @@ tools/emoji           Fetches the bundled 3D emoji artwork (Fluent, MIT)
 - [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md): current schema (v1) and the planned schema for all phases
 - [DEVELOPMENT_ROADMAP.md](DEVELOPMENT_ROADMAP.md): phases, open issues, technical risks
 - [TESTING.md](TESTING.md): test strategy, how to run tests, current results
-- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md): bundled font, icon and emoji licences
+- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md): bundled font and icon licences
 
 ## Privacy
 
