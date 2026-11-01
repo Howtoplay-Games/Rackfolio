@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- List -->
+    <string name="projects_title">Projects</string>
+    <string name="projects_search_placeholder">Search name, reference, customer, site</string>
+    <string name="projects_filter_all">All</string>
+    <string name="projects_filter_active">Active</string>
+    <string name="projects_filter_completed">Completed</string>
+    <string name="projects_filter_archived">Archived</string>
+    <string name="projects_sort_label">Sort projects</string>
+    <string name="projects_sort_recent">Recently updated</string>
+    <string name="projects_sort_name">Name</string>
+    <string name="projects_sort_start_date">Start date</string>
+    <string name="projects_new">New</string>
+    <plurals name="projects_count">
+        <item quantity="one">%d project</item>
+        <item quantity="other">%d projects</item>
+    </plurals>
+    <string name="projects_empty_title">No projects yet</string>
+    <string name="projects_empty_message">Create a project for each installation job to document equipment, cabling and handover.</string>
+    <string name="projects_empty_filtered_title">Nothing here</string>
+    <string name="projects_empty_filtered_message">No projects match this filter.</string>
+    <string name="projects_empty_search_message">No projects match \u201c%1$s\u201d.</string>
+
+    <!-- Detail -->
+    <string name="project_detail_title">Project</string>
+    <string name="project_not_found_title">Project not found</string>
+    <string name="project_not_found_message">It may have been deleted.</string>
+    <string name="project_section_customer_site">Customer &amp; site</string>
+    <string name="project_section_schedule">Schedule</string>
+    <string name="project_section_status">Status</string>
+    <string name="project_section_description">Description</string>
+    <string name="project_section_activity">Activity</string>
+    <string name="project_label_reference">Reference</string>
+    <string name="project_label_customer">Customer</string>
+    <string name="project_label_site">Site</string>
+    <string name="project_label_address">Address</string>
+    <string name="project_label_start">Start date</string>
+    <string name="project_label_end">Completion date</string>
+    <string name="project_value_not_set">Not set</string>
+    <string name="project_archived_banner">This project is archived. It is hidden from your active lists but nothing has been deleted.</string>
+    <plurals name="project_schedule_not_started">
+        <item quantity="one">Starts in %1$d day</item>
+        <item quantity="other">Starts in %1$d days</item>
+    </plurals>
+    <string name="project_schedule_progress">Day %1$d of %2$d</string>
+    <plurals name="project_schedule_overdue">
+        <item quantity="one">%1$d day past the completion date</item>
+        <item quantity="other">%1$d days past the completion date</item>
+    </plurals>
+    <string name="project_schedule_done">Completed</string>
+    <string name="project_no_activity">No activity yet.</string>
+
+    <!-- Detail actions -->
+    <string name="project_archived_message">Project archived</string>
+    <string name="project_restored_message">Project restored</string>
+    <string name="project_delete_title">Delete this project?</string>
+    <string name="project_delete_message">\u201c%1$s\u201d and everything recorded under it will be permanently deleted from this device. This cannot be undone. Archive it instead if you may need it later.</string>
+    <string name="project_delete_confirm">Delete permanently</string>
+
+    <!-- Editor -->
+    <string name="project_editor_new_title">New project</string>
+    <string name="project_editor_edit_title">Edit project</string>
+    <string name="project_editor_create">Create project</string>
+    <string name="project_editor_save">Save changes</string>
+    <string name="project_editor_section_project">Project</string>
+    <string name="project_field_name">Project name *</string>
+    <string name="project_field_name_placeholder">e.g. Warehouse CCTV upgrade</string>
+    <string name="project_field_reference">Reference number</string>
+    <string name="project_field_reference_placeholder" tools:ignore="TypographyDashes">e.g. PO-2026-0142</string>
+    <string name="project_field_customer">Customer name</string>
+    <string name="project_field_site">Site name</string>
+    <string name="project_field_address">Site address</string>
+    <string name="project_field_description">Description</string>
+    <string name="project_field_description_placeholder">Scope of work, access notes, contacts on site…</string>
+    <string name="project_field_start">Start date</string>
+    <string name="project_field_end">Completion date</string>
+    <string name="project_field_pick_date">Select date</string>
+    <string name="project_field_clear_date">Clear date</string>
+    <string name="project_error_required">Enter a project name</string>
+    <plurals name="project_error_too_long">
+        <item quantity="one">Must be %1$d character or fewer</item>
+        <item quantity="other">Must be %1$d characters or fewer</item>
+    </plurals>
+    <string name="project_error_end_before_start">Completion date can\u2019t be before the start date</string>
+    <string name="project_error_fix_fields">Check the highlighted fields</string>
+    <string name="project_discard_title">Discard changes?</string>
+    <string name="project_discard_message">Your unsaved changes to this project will be lost.</string>
+    <string name="project_discard_confirm">Discard</string>
+    <string name="project_discard_keep">Keep editing</string>
+    <string name="project_date_ok">OK</string>
+</resources>

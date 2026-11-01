@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Shared Android Lint configuration (lint searches parent directories, so this applies to every module). -->
+<lint>
+    <!--
+      AGP is pinned to 9.3.x on purpose: Kotlin 2.4.21's published compatibility matrix covers AGP up
+      to 9.3.1, and Gradle 9.7.x is the newest version both AGP 9.3 and KGP 2.4.21 support.
+      Upgrades are reviewed together (see ARCHITECTURE.md, "Toolchain and compatibility").
+    -->
+    <issue id="AndroidGradlePluginVersion" severity="ignore" />
+</lint>

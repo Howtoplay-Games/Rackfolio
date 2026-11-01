@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12+ backup rules.
+  Cloud backup: the Room database and preferences only, and only when the backup is end-to-end
+  encrypted (device has a screen lock). Photos and generated reports (later phases) are excluded
+  from cloud backup because of size; the in-app backup (Phase 4) covers them.
+  Device-to-device transfer: all app-private data.
+-->
+<data-extraction-rules>
+    <cloud-backup disableIfNoEncryptionCapabilities="true">
+        <include domain="database" path="." />
+        <include domain="file" path="datastore/" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="database" path="." />
+        <include domain="file" path="." />
+    </device-transfer>
+</data-extraction-rules>

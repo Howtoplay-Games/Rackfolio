@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Project status -->
+    <string name="ui_status_planned">Planned</string>
+    <string name="ui_status_in_progress">In progress</string>
+    <string name="ui_status_on_hold">On hold</string>
+    <string name="ui_status_completed">Completed</string>
+    <string name="ui_archived">Archived</string>
+
+    <!-- Common actions -->
+    <string name="ui_action_cancel">Cancel</string>
+    <string name="ui_action_save">Save</string>
+    <string name="ui_action_delete">Delete</string>
+    <string name="ui_action_edit">Edit</string>
+    <string name="ui_action_archive">Archive</string>
+    <string name="ui_action_restore">Restore</string>
+    <string name="ui_action_undo">Undo</string>
+    <string name="ui_action_view_all">View all</string>
+    <string name="ui_action_new_project">New project</string>
+    <string name="ui_action_more">More options</string>
+
+    <!-- Activity feed. %1$s = project name -->
+    <string name="ui_activity_created">Project created</string>
+    <string name="ui_activity_updated">Details updated</string>
+    <string name="ui_activity_status_changed">Status changed to %1$s</string>
+    <string name="ui_activity_archived">Project archived</string>
+    <string name="ui_activity_restored">Project restored</string>
+    <string name="ui_activity_deleted_project">Deleted project</string>
+
+    <!-- Relative time -->
+    <string name="ui_time_just_now">Just now</string>
+    <string name="ui_updated">Updated %1$s</string>
+    <string name="ui_no_dates">No dates set</string>
+    <string name="ui_date_from">From %1$s</string>
+    <string name="ui_date_until">Until %1$s</string>
+    <string name="ui_unnamed_customer">No customer</string>
+
+    <string name="ui_error_generic">Something went wrong. Please try again.</string>
+    <string name="ui_error_not_saved">Couldn\'t save your changes. Nothing was lost; please try again.</string>
+</resources>

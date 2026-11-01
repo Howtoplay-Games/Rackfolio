@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dashboard_hello">Hello</string>
+    <string name="dashboard_hello_name">Hello, %1$s</string>
+    <string name="dashboard_search">Search</string>
+    <string name="dashboard_profile">Profile and settings</string>
+    <string name="dashboard_overview">Overview</string>
+    <string name="dashboard_total_projects">Total projects</string>
+    <string name="dashboard_active_projects">Active</string>
+    <string name="dashboard_completed_projects">Completed</string>
+    <string name="dashboard_new_this_month">new this month</string>
+    <string name="dashboard_in_progress">in progress</string>
+    <string name="dashboard_completed_this_month">this month</string>
+    <plurals name="dashboard_archived_count">
+        <item quantity="one">%1$d archived project</item>
+        <item quantity="other">%1$d archived projects</item>
+    </plurals>
+
+    <string name="dashboard_quick_actions">Quick actions</string>
+    <string name="dashboard_action_new">New project</string>
+    <string name="dashboard_action_search">Search</string>
+    <string name="dashboard_action_active">Active</string>
+    <string name="dashboard_action_completed">Completed</string>
+    <string name="dashboard_action_archived">Archived</string>
+
+    <string name="dashboard_status_title">Project status</string>
+    <string name="dashboard_status_completed">Completed</string>
+    <plurals name="dashboard_status_gauge_a11y">
+        <item quantity="one">%1$d of %2$d project completed</item>
+        <item quantity="other">%1$d of %2$d projects completed</item>
+    </plurals>
+
+    <string name="dashboard_activity_title">Activity</string>
+    <string name="dashboard_activity_period">Last 7 days</string>
+    <string name="dashboard_activity_vs_previous">vs previous 7 days</string>
+    <string name="dashboard_activity_no_baseline">No activity in the previous 7 days</string>
+    <plurals name="dashboard_activity_updates">
+        <item quantity="one">%d update</item>
+        <item quantity="other">%d updates</item>
+    </plurals>
+    <string name="dashboard_activity_chart_a11y">Activity over the last 7 days: %1$s</string>
+
+    <string name="dashboard_recent_projects">Recent projects</string>
+    <string name="dashboard_recent_activity">Recent activity</string>
+    <string name="dashboard_no_recent_projects">No active projects. Archived and completed projects are under Projects.</string>
+    <string name="dashboard_no_activity">Changes you make to projects appear here.</string>
+
+    <string name="dashboard_welcome_title">Welcome to PortProof</string>
+    <string name="dashboard_welcome_message">Document installations as you work: one project per job, with customer and site details, dates and status. Everything stays on this device and works offline.</string>
+    <string name="dashboard_welcome_action">Create your first project</string>
+</resources>
