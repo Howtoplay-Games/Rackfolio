@@ -2,15 +2,13 @@ package com.portproof.app
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
@@ -34,13 +32,17 @@ class CreateProjectFlowTest {
 
     private fun waitForText(text: String) = compose.waitUntilAtLeastOneExists(hasText(text), timeoutMillis = 10_000)
 
-    @Test
-    fun createProjectFromDashboardThenFindItEverywhere() {
-        waitForText("Create Your First Project")
-        compose.saveScreenshot("01_dashboard_first_run")
+    private fun back() = compose.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
 
-        compose.onNodeWithText("Create Your First Project").performClick()
-        waitForText("New project")
+    private fun waitForHome() = compose.waitUntilAtLeastOneExists(hasContentDescription("Active projects: ", substring = true), 10_000)
+
+    @Test
+    fun createProjectFromHomeThenFindItEverywhere() {
+        waitForHome()
+        compose.saveScreenshot("01_home_first_run")
+
+        compose.onNodeWithContentDescription("New project").performClick()
+        waitForText("Create project")
 
         // Saving without a name is blocked with an inline error.
         compose.onNodeWithText("Create project").performClick()
@@ -56,13 +58,12 @@ class CreateProjectFlowTest {
         compose.onNodeWithText("Warehouse CCTV upgrade").assertIsDisplayed()
         compose.saveScreenshot("03_project_detail")
 
-        compose.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
-        waitForText("Active Projects")
-        // Featured under "Active Projects" on the dashboard.
-        compose.onAllNodesWithText("Warehouse CCTV upgrade").onFirst().performScrollTo().assertIsDisplayed()
-        compose.saveScreenshot("04_dashboard_with_project")
+        // The header close button returns straight to Home, which now counts the project.
+        compose.onNodeWithContentDescription("Close and return home").performClick()
+        compose.waitUntilAtLeastOneExists(hasContentDescription("Active projects: 1"), 10_000)
+        compose.saveScreenshot("04_home_with_project")
 
-        compose.onNodeWithContentDescription("Projects").performClick()
+        compose.onNodeWithContentDescription("Active projects: 1").performClick()
         waitForText("1 project")
         compose.onNodeWithText("Warehouse CCTV upgrade").assertIsDisplayed()
         compose.saveScreenshot("05_projects_list")
@@ -70,13 +71,13 @@ class CreateProjectFlowTest {
 
     @Test
     fun leavingEditorWithUnsavedChangesAsksBeforeDiscarding() {
-        waitForText("Create Your First Project")
-        compose.onNodeWithText("Create Your First Project").performClick()
-        waitForText("New project")
+        waitForHome()
+        compose.onNodeWithContentDescription("New project").performClick()
+        waitForText("Create project")
         compose.onNode(hasText("Project name *") and hasSetTextAction()).performTextInput("Plant room BMS")
         compose.waitForIdle() // let the back handler observe the unsaved change
 
-        compose.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
+        back()
         waitForText("Discard changes?")
         compose.saveScreenshot("06_discard_dialog")
 
@@ -85,31 +86,32 @@ class CreateProjectFlowTest {
     }
 
     @Test
-    fun everyHomeEntryPointAndTabOpensItsScreen() {
-        waitForText("Create Your First Project")
+    fun everyHomeEntryPointOpensItsScreen() {
+        waitForHome()
 
-        compose.onNodeWithContentDescription("Activity").performClick()
+        compose.onNodeWithContentDescription("Project overview").performClick()
+        waitForText("Upcoming deadlines")
+        compose.saveScreenshot("07_overview_empty")
+        compose.onNodeWithText("See all").performClick()
         waitForText("No activity yet")
-        compose.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
-        waitForText("Overview")
+        back()
+        waitForText("Upcoming deadlines")
+        back()
+        waitForHome()
 
-        compose.onAllNodesWithText("See Details").onFirst().performClick()
-        waitForText("Activity by Hour")
-        compose.onNodeWithText("Upcoming Deadlines").assertIsDisplayed()
-        compose.saveScreenshot("07_insight_empty")
-        compose.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
-        waitForText("Overview")
-
-        compose.onNodeWithContentDescription("Insights").performClick()
-        waitForText("Total Projects") // content, not just the title (the title also shows while loading)
-        compose.saveScreenshot("08_metrics_empty")
-
-        compose.onNodeWithContentDescription("Search").performClick()
+        compose.onNodeWithText("Search a project").performClick()
         waitForText("Find a project")
-        compose.saveScreenshot("09_search")
+        compose.saveScreenshot("08_search")
+        back()
+        waitForHome()
 
-        // Back from a tab returns to Home before leaving the app.
-        compose.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
-        waitForText("Overview")
+        compose.onNodeWithContentDescription("Profile and settings").performClick()
+        waitForText("Technician name")
+        compose.saveScreenshot("09_settings")
+        back()
+        waitForHome()
+
+        compose.onNodeWithContentDescription("Completed projects: 0 of 0").performClick()
+        waitForText("No projects yet") // first-run empty state, with a create button
     }
 }

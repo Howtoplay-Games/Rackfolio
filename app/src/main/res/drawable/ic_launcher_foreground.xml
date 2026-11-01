@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- PortProof mark: RJ45 port outline with a check mark. Content sits inside the 66dp safe zone. -->
+<!-- PortProof mark: a "P" (Inter Bold outline) inside four rounded scan-frame corners. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
@@ -7,15 +7,11 @@
     android:viewportHeight="108">
     <path
         android:fillColor="#00000000"
-        android:pathData="M38,32 H70 A6,6 0 0 1 76,38 V62 A6,6 0 0 1 70,68 H64 V72 A3,3 0 0 1 61,75 H47 A3,3 0 0 1 44,72 V68 H38 A6,6 0 0 1 32,62 V38 A6,6 0 0 1 38,32 Z"
-        android:strokeWidth="4.5"
-        android:strokeColor="#FFFFFFFF"
-        android:strokeLineJoin="round" />
+        android:pathData="M22,48 V32 A10,10 0 0 1 32,22 H48 M60,22 H76 A10,10 0 0 1 86,32 V48 M86,60 V76 A10,10 0 0 1 76,86 H60 M48,86 H32 A10,10 0 0 1 22,76 V60"
+        android:strokeWidth="7"
+        android:strokeColor="#FF4F5C96"
+        android:strokeLineCap="round" />
     <path
-        android:fillColor="#00000000"
-        android:pathData="M44,50 L51,57 L64.5,43.5"
-        android:strokeWidth="4.5"
-        android:strokeColor="#FF93A0FF"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round" />
+        android:fillColor="#FF4F5C96"
+        android:pathData="M41.29 71V37H54.55Q58.43 37 61.14 38.47Q63.86 39.94 65.28 42.53Q66.71 45.12 66.71 48.48Q66.71 51.86 65.26 54.42Q63.81 56.99 61.05 58.44Q58.29 59.89 54.39 59.89H48.25V71ZM48.25 54.27H53.27Q56.46 54.27 57.99 52.65Q59.52 51.03 59.52 48.48Q59.52 45.9 57.99 44.32Q56.46 42.75 53.25 42.75H48.25Z" />
 </vector>

@@ -48,15 +48,15 @@ fun PortProofTheme(
 private fun PortProofColors.toMaterialColorScheme(): ColorScheme {
     val base = if (isDark) darkColorScheme() else lightColorScheme()
     return base.copy(
-        primary = accent,
+        primary = accentStrong,
         onPrimary = onAccent,
         primaryContainer = accentContainer,
         onPrimaryContainer = onAccentContainer,
         secondary = textSecondary,
         onSecondary = surface,
-        secondaryContainer = surfaceSunken,
+        secondaryContainer = accentContainer,
         onSecondaryContainer = textPrimary,
-        tertiary = chartPeak,
+        tertiary = accent,
         background = background,
         onBackground = textPrimary,
         surface = surface,

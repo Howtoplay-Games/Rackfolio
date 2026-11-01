@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- List -->
-    <string name="projects_title">Projects</string>
-    <string name="projects_search_placeholder">Search name, reference, customer, site</string>
+    <string name="projects_title">Your\nprojects</string>
+    <string name="projects_stat_active">Active\nprojects</string>
+    <string name="projects_stat_completed">Completed\nprojects</string>
+    <string name="projects_search_placeholder">Search name, customer, site</string>
     <string name="projects_filter_all">All</string>
     <string name="projects_filter_active">Active</string>
     <string name="projects_filter_completed">Completed</string>
@@ -11,7 +13,6 @@
     <string name="projects_sort_recent">Recently updated</string>
     <string name="projects_sort_name">Name</string>
     <string name="projects_sort_start_date">Start date</string>
-    <string name="projects_new">New</string>
     <plurals name="projects_count">
         <item quantity="one">%d project</item>
         <item quantity="other">%d projects</item>
@@ -31,25 +32,48 @@
     <string name="project_section_status">Status</string>
     <string name="project_section_description">Description</string>
     <string name="project_section_activity">Activity</string>
-    <string name="project_label_reference">Reference</string>
     <string name="project_label_customer">Customer</string>
     <string name="project_label_site">Site</string>
-    <string name="project_label_address">Address</string>
-    <string name="project_label_start">Start date</string>
-    <string name="project_label_end">Completion date</string>
-    <string name="project_value_not_set">Not set</string>
-    <string name="project_archived_banner">This project is archived. It is hidden from your active lists but nothing has been deleted.</string>
     <plurals name="project_schedule_not_started">
         <item quantity="one">Starts in %1$d day</item>
         <item quantity="other">Starts in %1$d days</item>
     </plurals>
     <string name="project_schedule_progress">Day %1$d of %2$d</string>
     <plurals name="project_schedule_overdue">
-        <item quantity="one">%1$d day past the completion date</item>
-        <item quantity="other">%1$d days past the completion date</item>
+        <item quantity="one">%1$d day overdue</item>
+        <item quantity="other">%1$d days overdue</item>
     </plurals>
     <string name="project_schedule_done">Completed</string>
     <string name="project_no_activity">No activity yet.</string>
+
+    <string name="project_record">Project record</string>
+    <string name="project_meta">Created %1$s · Updated %2$s</string>
+    <string name="project_dates_range">%1$s – %2$s</string>
+    <string name="project_dates_start">Starts %1$s</string>
+    <string name="project_dates_end">Due %1$s</string>
+    <string name="project_review_no_customer">No customer recorded yet.</string>
+    <string name="project_review_no_site">No site name or address recorded yet.</string>
+    <string name="project_review_no_dates">No start or completion date set.</string>
+    <plurals name="project_review_overdue">
+        <item quantity="one">%1$s. The completion date passed %2$d day ago.</item>
+        <item quantity="other">%1$s. The completion date passed %2$d days ago.</item>
+    </plurals>
+    <plurals name="project_review_due_soon">
+        <item quantity="one">%1$s. Due in %2$d day.</item>
+        <item quantity="other">%1$s. Due in %2$d days.</item>
+    </plurals>
+    <string name="project_review_due_today">%1$s. Due today.</string>
+    <string name="project_review_on_hold">On hold. Work is paused.</string>
+    <string name="project_review_archived">Archived on %1$s. Restore it from the menu to make changes.</string>
+    <string name="project_review_completed_on">Completed on %1$s.</string>
+    <string name="project_review_complete">Record complete</string>
+    <plurals name="project_review_issues">
+        <item quantity="one">%d item needs attention</item>
+        <item quantity="other">%d items need attention</item>
+    </plurals>
+    <string name="project_no_description">No description.</string>
+    <string name="project_change_status">Change status</string>
+    <string name="project_edit">Edit project</string>
 
     <!-- Detail actions -->
     <string name="project_archived_message">Project archived</string>
@@ -59,8 +83,8 @@
     <string name="project_delete_confirm">Delete permanently</string>
 
     <!-- Editor -->
-    <string name="project_editor_new_title">New project</string>
-    <string name="project_editor_edit_title">Edit project</string>
+    <string name="project_editor_new_title">New\nproject</string>
+    <string name="project_editor_edit_title">Edit\nproject</string>
     <string name="project_editor_create">Create project</string>
     <string name="project_editor_save">Save changes</string>
     <string name="project_editor_section_project">Project</string>

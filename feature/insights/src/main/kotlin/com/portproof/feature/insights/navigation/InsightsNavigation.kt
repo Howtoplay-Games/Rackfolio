@@ -6,32 +6,29 @@ import androidx.navigation.compose.composable
 import com.portproof.core.model.ProjectId
 import com.portproof.core.model.ProjectListFilter
 import com.portproof.feature.insights.ActivityLogRoute as ActivityLogScreenRoute
-import com.portproof.feature.insights.InsightRoute as InsightScreenRoute
-import com.portproof.feature.insights.MetricsRoute as MetricsScreenRoute
+import com.portproof.feature.insights.OverviewActions
+import com.portproof.feature.insights.OverviewRoute as OverviewScreenRoute
 import kotlinx.serialization.Serializable
 
-/** Top-level "Insights" tab (reference "Metrics Summary"). Becomes part of Reports in Phase 4. */
+/** "Project overview", opened from the black button on Home. Grows into Reports in Phase 4. */
 @Serializable
-data object MetricsRoute
+data object OverviewRoute
 
-/** Detail screen behind the dashboard's "See Details" (reference "Insight"). */
-@Serializable
-data object InsightRoute
-
-/** Full activity log behind the dashboard bell. */
+/** Full activity log, opened from the overview's "See all". */
 @Serializable
 data object ActivityLogRoute
 
-fun NavController.navigateToInsight() = navigate(InsightRoute) { launchSingleTop = true }
+fun NavController.navigateToOverview() = navigate(OverviewRoute) { launchSingleTop = true }
 
 fun NavController.navigateToActivityLog() = navigate(ActivityLogRoute) { launchSingleTop = true }
 
-fun NavGraphBuilder.metricsScreen(onOpenProjects: (ProjectListFilter) -> Unit) {
-    composable<MetricsRoute> { MetricsScreenRoute(onOpenProjects = onOpenProjects) }
-}
-
-fun NavGraphBuilder.insightScreen(onBack: () -> Unit, onOpenProject: (ProjectId) -> Unit) {
-    composable<InsightRoute> { InsightScreenRoute(onBack = onBack, onOpenProject = onOpenProject) }
+fun NavGraphBuilder.overviewScreen(
+    onBack: () -> Unit,
+    onOpenProjects: (ProjectListFilter) -> Unit,
+    onOpenProject: (ProjectId) -> Unit,
+    onOpenActivity: () -> Unit,
+) {
+    composable<OverviewRoute> { OverviewScreenRoute(OverviewActions(onBack, onOpenProjects, onOpenProject, onOpenActivity)) }
 }
 
 fun NavGraphBuilder.activityLogScreen(onBack: () -> Unit, onOpenProject: (ProjectId) -> Unit) {

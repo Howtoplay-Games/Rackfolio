@@ -1,32 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="dashboard_name_fallback">Welcome to PortProof</string>
-    <string name="dashboard_activity">Activity</string>
+    <string name="dashboard_logo">PortProof</string>
     <string name="dashboard_profile">Profile and settings</string>
-
-    <string name="dashboard_progress_title">Project Progress</string>
-    <plurals name="dashboard_progress_left">
-        <item quantity="one">%d Project Left</item>
-        <item quantity="other">%d Projects Left</item>
-    </plurals>
-    <plurals name="dashboard_progress_a11y">
-        <item quantity="one">Project progress: %1$d%% completed, %2$d open project</item>
-        <item quantity="other">Project progress: %1$d%% completed, %2$d open projects</item>
-    </plurals>
-
-    <string name="dashboard_overview">Overview</string>
-    <string name="dashboard_active_projects_metric">Active Projects</string>
-    <string name="dashboard_due_this_week">Due This Week</string>
-    <plurals name="dashboard_unit_projects">
-        <item quantity="one">project</item>
-        <item quantity="other">projects</item>
-    </plurals>
-
-    <string name="dashboard_active_projects">Active Projects</string>
-    <string name="dashboard_open_project">Open Project</string>
-    <string name="dashboard_new_project_title">Start a New Project</string>
-    <string name="dashboard_first_project_title">Create Your First Project</string>
-    <string name="dashboard_new_project_caption">Document a new installation</string>
-    <string name="dashboard_new_project_action">New Project</string>
-    <string name="dashboard_no_customer">No customer set</string>
+    <string name="dashboard_overview">Project overview</string>
+    <!-- %1$s = greeting ("Good morning"), %2$s = first name -->
+    <string name="dashboard_greeting_name">%1$s,\n%2$s</string>
+    <string name="dashboard_tile_active">Active\nprojects</string>
+    <string name="dashboard_tile_completed">Completed\nprojects</string>
+    <string name="dashboard_tile_active_a11y">Active projects: %1$d</string>
+    <string name="dashboard_tile_completed_a11y">Completed projects: %1$d of %2$d</string>
+    <string name="dashboard_search">Search a project</string>
+    <string name="dashboard_new_project">New project</string>
 </resources>

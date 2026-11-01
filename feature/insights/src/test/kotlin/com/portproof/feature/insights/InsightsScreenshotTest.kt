@@ -1,10 +1,6 @@
 package com.portproof.feature.insights
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.portproof.core.designsystem.theme.PortProofTheme
@@ -23,79 +19,64 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import java.time.Instant
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
-/** Renders the Insight and Metrics Summary screens with representative data. */
+/** Renders the overview and activity log with representative data. */
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [36], qualifiers = "w390dp-h1200dp-xxhdpi")
+@Config(sdk = [36], qualifiers = "w390dp-h1300dp-xxhdpi")
 class InsightsScreenshotTest {
 
     @get:Rule
     val compose = createComposeRule()
 
     private val today = LocalDate.now()
-    private val summary = ProjectSummary(20, 14, 6, 3, 4, 9, 1, 3, 2)
-    private val insights = ActivityInsights(
-        trend = ActivityTrend(
-            days = listOf(4, 9, 6, 12, 7, 3, 8).mapIndexed { i, c -> DailyActivity(today.minusDays(6L - i), c) },
-            previousPeriodTotal = 40,
-        ),
-        byHour = listOf(0, 0, 0, 0, 0, 0, 1, 3, 6, 9, 7, 8, 4, 6, 9, 11, 7, 5, 3, 2, 1, 1, 0, 0),
-        today = 8,
+    private val now = Instant.now()
+
+    private fun entry(id: Long, name: String, action: ActivityAction, detail: String?, hoursAgo: Long) = ActivityEntry(
+        id, ProjectId("p$id"), name, ActivityEntityType.PROJECT, "p$id", action, null, detail, now.minus(hoursAgo, ChronoUnit.HOURS),
     )
-    private val insightState = InsightUiState(
+
+    private val entries = listOf(
+        entry(5, "Warehouse CCTV Upgrade", ActivityAction.STATUS_CHANGED, "IN_PROGRESS", 0),
+        entry(4, "Clinic Access Control", ActivityAction.UPDATED, null, 1),
+        entry(3, "Office Network Refit", ActivityAction.STATUS_CHANGED, "COMPLETED", 26),
+        entry(2, "School AV Install", ActivityAction.CREATED, null, 27),
+        entry(1, "Depot Wi-Fi Survey", ActivityAction.ARCHIVED, null, 75),
+    )
+
+    private val overview = OverviewUiState(
         isLoading = false,
-        summary = summary,
-        insights = insights,
+        summary = ProjectSummary(20, 14, 6, 3, 4, 9, 1, 3, 2),
+        insights = ActivityInsights(
+            ActivityTrend(listOf(4, 9, 6, 12, 7, 3, 8).mapIndexed { i, c -> DailyActivity(today.minusDays(6L - i), c) }, 40),
+            List(24) { if (it in 8..17) it % 5 + 1 else 0 },
+            today = 8,
+        ),
         deadlines = listOf(
             testProject(id = "1", name = "Clinic Access Control").copy(endDate = today.minusDays(2)),
-            testProject(id = "2", name = "Warehouse CCTV Upgrade").copy(endDate = today.plusDays(1)),
+            testProject(id = "2", name = "Warehouse CCTV Upgrade").copy(endDate = today),
             testProject(id = "3", name = "School AV Install").copy(endDate = today.plusDays(5)),
         ),
+        recentActivity = entries.take(4),
         today = today,
     )
 
     private fun render(name: String, dark: Boolean = false, content: @Composable () -> Unit) {
-        compose.setContent {
-            PortProofTheme(darkTheme = dark) {
-                Box(Modifier.fillMaxSize().background(PortProofTheme.colors.background)) { content() }
-            }
-        }
+        compose.setContent { PortProofTheme(darkTheme = dark) { content() } }
         compose.saveScreenshot(name)
     }
 
-    @Test
-    fun insightLight() = render("insight_light") { InsightScreen(insightState, {}, {}) }
+    private val noActions = OverviewActions({}, {}, {}, {})
 
     @Test
-    fun insightDark() = render("insight_dark", dark = true) { InsightScreen(insightState, {}, {}) }
+    fun overviewLight() = render("overview_light") { OverviewScreen(overview, noActions) }
 
     @Test
-    fun metricsLight() = render("metrics_light") { MetricsScreen(MetricsUiState(false, summary, insights), {}) }
+    fun overviewDark() = render("overview_dark", dark = true) { OverviewScreen(overview, noActions) }
 
     @Test
-    fun metricsDark() = render("metrics_dark", dark = true) { MetricsScreen(MetricsUiState(false, summary, insights), {}) }
-
-    @Test
-    fun activityLog() = render("activity_log") {
-        val now = java.time.Instant.now()
-        fun entry(id: Long, name: String, action: ActivityAction, detail: String?, hoursAgo: Long) = ActivityEntry(
-            id, ProjectId("p$id"), name, ActivityEntityType.PROJECT, "p$id", action, null, detail,
-            now.minus(hoursAgo, java.time.temporal.ChronoUnit.HOURS),
-        )
-        ActivityLogScreen(
-            ActivityLogUiState(
-                isLoading = false,
-                entries = listOf(
-                    entry(5, "Warehouse CCTV Upgrade", ActivityAction.STATUS_CHANGED, "IN_PROGRESS", 0),
-                    entry(4, "Clinic Access Control", ActivityAction.UPDATED, null, 1),
-                    entry(3, "Office Network Refit", ActivityAction.STATUS_CHANGED, "COMPLETED", 26),
-                    entry(2, "School AV Install", ActivityAction.CREATED, null, 27),
-                    entry(1, "Depot Wi-Fi Survey", ActivityAction.ARCHIVED, null, 75),
-                ),
-            ),
-            {}, {},
-        )
-    }
+    fun activityLog() = render("activity_log") { ActivityLogScreen(ActivityLogUiState(false, entries), {}, {}) }
 }

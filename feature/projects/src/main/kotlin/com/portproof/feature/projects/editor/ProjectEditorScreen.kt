@@ -1,19 +1,10 @@
 package com.portproof.feature.projects.editor
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -38,12 +29,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.portproof.core.designsystem.component.PpCard
 import com.portproof.core.designsystem.component.PpConfirmDialog
 import com.portproof.core.designsystem.component.PpEmptyState
-import com.portproof.core.designsystem.component.PpIconButton
+import com.portproof.core.designsystem.component.PpGradientScreen
 import com.portproof.core.designsystem.component.PpPrimaryButton
 import com.portproof.core.designsystem.component.PpSectionHeader
 import com.portproof.core.designsystem.component.PpSegmentedControl
 import com.portproof.core.designsystem.component.PpTextField
-import com.portproof.core.designsystem.component.PpTopBar
 import com.portproof.core.designsystem.icon.PortProofIcons
 import com.portproof.core.designsystem.theme.PortProofTheme
 import com.portproof.core.model.FieldError
@@ -52,7 +42,6 @@ import com.portproof.core.model.ProjectId
 import com.portproof.core.model.ProjectStatus
 import com.portproof.core.ui.labelRes
 import com.portproof.feature.projects.R
-import com.portproof.core.designsystem.R as DsR
 import com.portproof.core.ui.R as UiR
 
 @Composable
@@ -156,41 +145,41 @@ internal fun ProjectEditorScreen(
     callbacks: EditorCallbacks,
 ) {
     val spacing = PortProofTheme.spacing
-    Box(Modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxSize().imePadding(), horizontalAlignment = Alignment.CenterHorizontally) {
-            PpTopBar(
-                title = stringResource(if (isNew) R.string.project_editor_new_title else R.string.project_editor_edit_title),
-                modifier = Modifier.widthIn(max = spacing.maxContentWidth),
-                navigationIcon = {
-                    PpIconButton(
-                        PortProofIcons.Close,
-                        stringResource(DsR.string.designsystem_close),
-                        callbacks.onClose)
-                },
-            )
+    Box {
+        PpGradientScreen(
+            title = stringResource(if (isNew) R.string.project_editor_new_title else R.string.project_editor_edit_title),
+            onBack = callbacks.onClose,
+            bottomBar = if (loadState == EditorLoadState.Ready) {
+                {
+                    PpPrimaryButton(
+                        text = stringResource(if (isNew) R.string.project_editor_create else R.string.project_editor_save),
+                        onClick = callbacks.onSave,
+                        loading = isSaving,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            } else {
+                null
+            },
+        ) {
             when (loadState) {
-                EditorLoadState.Loading -> Box(Modifier.weight(1f))
+                EditorLoadState.Loading -> Unit
                 EditorLoadState.NotFound -> PpEmptyState(
                     icon = PortProofIcons.Alert,
                     title = stringResource(R.string.project_not_found_title),
                     message = stringResource(R.string.project_not_found_message),
                 )
-                EditorLoadState.Ready -> {
-                    Column(
-                        Modifier
-                            .weight(1f)
-                            .widthIn(max = spacing.maxContentWidth)
-                            .verticalScroll(rememberScrollState())
-                            .padding(horizontal = spacing.screenGutter, vertical = spacing.sm),
-                        verticalArrangement = Arrangement.spacedBy(spacing.cardGap),
-                    ) {
-                        EditorFields(form, errors, callbacks)
-                    }
-                    SaveBar(isNew, isSaving, callbacks.onSave)
+                EditorLoadState.Ready -> Column(
+                    Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = spacing.screenGutter, vertical = spacing.md),
+                    verticalArrangement = Arrangement.spacedBy(spacing.md),
+                ) {
+                    EditorFields(form, errors, callbacks)
                 }
             }
         }
-        SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter).padding(bottom = 88.dp))
+        SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter).padding(bottom = 96.dp))
     }
 }
 
@@ -242,28 +231,5 @@ private fun EditorFields(form: ProjectForm, errors: Map<ProjectField, FieldError
             placeholder = stringResource(R.string.project_field_description_placeholder),
             error = errors[ProjectField.DESCRIPTION].message(), singleLine = false, minLines = 4, maxLines = 12,
             keyboardOptions = sentences)
-    }
-}
-
-@Composable
-private fun SaveBar(isNew: Boolean, isSaving: Boolean, onSave: () -> Unit) {
-    val colors = PortProofTheme.colors
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .background(colors.background)
-            .windowInsetsPadding(WindowInsets.navigationBars)
-            .padding(horizontal = PortProofTheme.spacing.screenGutter, vertical = 12.dp),
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        PpPrimaryButton(
-            text = stringResource(if (isNew) R.string.project_editor_create else R.string.project_editor_save),
-            onClick = onSave,
-            loading = isSaving,
-            leadingIcon = PortProofIcons.Check,
-            modifier = Modifier
-                .widthIn(max = PortProofTheme.spacing.maxContentWidth)
-                .fillMaxWidth(),
-        )
     }
 }

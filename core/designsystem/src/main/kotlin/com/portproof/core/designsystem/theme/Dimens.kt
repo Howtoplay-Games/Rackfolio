@@ -27,18 +27,19 @@ data class PortProofSpacing(
     val maxContentWidth: Dp = 880.dp,
 )
 
-/** Corner radii taken from the reference: soft 20dp cards, pill buttons and navigation. */
+/** Corner radii taken from the reference: 24dp glass tiles, 20dp document cards, pill controls. */
 @Immutable
 data class PortProofShapes(
+    val tile: RoundedCornerShape = RoundedCornerShape(24.dp),
     val card: RoundedCornerShape = RoundedCornerShape(20.dp),
-    val hero: RoundedCornerShape = RoundedCornerShape(22.dp),
-    val feature: RoundedCornerShape = RoundedCornerShape(24.dp),
     val panel: RoundedCornerShape = RoundedCornerShape(16.dp),
-    val tile: RoundedCornerShape = RoundedCornerShape(12.dp),
+    val sheet: RoundedCornerShape = RoundedCornerShape(28.dp),
+    val header: RoundedCornerShape = RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp),
+    val highlight: RoundedCornerShape = RoundedCornerShape(4.dp),
     val control: RoundedCornerShape = RoundedCornerShape(percent = 50),
-    val input: RoundedCornerShape = RoundedCornerShape(14.dp),
+    val input: RoundedCornerShape = RoundedCornerShape(percent = 50),
+    val field: RoundedCornerShape = RoundedCornerShape(16.dp),
     val pill: RoundedCornerShape = RoundedCornerShape(percent = 50),
-    val sheet: RoundedCornerShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
 )
 
 internal val PortProofMaterialShapes = Shapes(

@@ -26,11 +26,11 @@ private fun style(size: Int, weight: FontWeight, lineHeight: Int, tracking: Doub
     letterSpacing = tracking.em,
 )
 
-/** Light weights and generous sizes, as in the reference: titles are Medium, figures Regular. */
+/** Reference type scale: large Medium-weight titles with tight tracking, small Regular captions. */
 internal val PortProofTypography = Typography(
-    displaySmall = style(32, FontWeight.Normal, 38, -0.02),
-    headlineMedium = style(26, FontWeight.Medium, 32, -0.02),
-    headlineSmall = style(22, FontWeight.Normal, 28, -0.015),
+    displaySmall = style(32, FontWeight.Medium, 38, -0.03),
+    headlineMedium = style(30, FontWeight.Medium, 35, -0.03),
+    headlineSmall = style(24, FontWeight.Medium, 29, -0.025),
     titleLarge = style(20, FontWeight.Medium, 26, -0.01),
     titleMedium = style(18, FontWeight.Medium, 24, -0.01),
     titleSmall = style(15, FontWeight.Medium, 20, -0.005),

@@ -42,24 +42,17 @@ class InsightsViewModelTest {
     private val activity = TestActivityRepository()
 
     @Test
-    fun insightListsDeadlinesWithinTheWeekOverdueFirst() = runTest {
-        val vm = InsightViewModel(projects, activity, clock)
+    fun overviewCombinesCountsActivityAndDeadlinesOverdueFirst() = runTest {
+        activity.hourly.value = List(24) { if (it == 9) 4 else 0 }
+        val vm = OverviewViewModel(projects, activity, clock)
         backgroundScope.launch { vm.uiState.collect() }
         advanceUntilIdle()
         val state = vm.uiState.value
+        assertEquals(4, state.summary.total)
         assertEquals(listOf("late", "soon"), state.deadlines.map { it.id.value })
+        assertEquals(setOf(9), state.insights?.peakHours())
         assertEquals(today, state.today)
         assertNotNull(state.insights)
-    }
-
-    @Test
-    fun metricsCombineCountsAndActivity() = runTest {
-        activity.hourly.value = List(24) { if (it == 9) 4 else 0 }
-        val vm = MetricsViewModel(projects, activity)
-        backgroundScope.launch { vm.uiState.collect() }
-        advanceUntilIdle()
-        assertEquals(4, vm.uiState.value.summary.total)
-        assertEquals(setOf(9), vm.uiState.value.insights?.peakHours())
     }
 
     @Test

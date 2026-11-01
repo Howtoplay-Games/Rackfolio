@@ -20,51 +20,35 @@ import javax.inject.Inject
 
 internal const val INSIGHT_DAYS = 7
 
-/** "Metrics Summary" tab: daily activity chart plus the project counts grid. */
-data class MetricsUiState(
-    val isLoading: Boolean = true,
-    val summary: ProjectSummary = ProjectSummary.Empty,
-    val insights: ActivityInsights? = null,
-)
-
-@HiltViewModel
-class MetricsViewModel @Inject constructor(
-    projectRepository: ProjectRepository,
-    activityRepository: ActivityRepository,
-) : ViewModel() {
-    val uiState: StateFlow<MetricsUiState> = combine(
-        projectRepository.observeSummary(),
-        activityRepository.observeActivityInsights(INSIGHT_DAYS),
-    ) { summary, insights -> MetricsUiState(false, summary, insights) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), MetricsUiState())
-}
-
-/** "Insight" detail screen: activity by hour, completion, and upcoming completion dates. */
-data class InsightUiState(
+/** "Project overview": counts, this week's activity, upcoming deadlines and the latest changes. */
+data class OverviewUiState(
     val isLoading: Boolean = true,
     val summary: ProjectSummary = ProjectSummary.Empty,
     val insights: ActivityInsights? = null,
     val deadlines: List<Project> = emptyList(),
+    val recentActivity: List<ActivityEntry> = emptyList(),
     val today: LocalDate = LocalDate.MIN,
 )
 
 @HiltViewModel
-class InsightViewModel @Inject constructor(
+class OverviewViewModel @Inject constructor(
     projectRepository: ProjectRepository,
     activityRepository: ActivityRepository,
     clock: Clock,
 ) : ViewModel() {
     private val today = LocalDate.now(clock)
 
-    val uiState: StateFlow<InsightUiState> = combine(
+    val uiState: StateFlow<OverviewUiState> = combine(
         projectRepository.observeSummary(),
         activityRepository.observeActivityInsights(INSIGHT_DAYS),
-        projectRepository.observeUpcomingDeadlines(today.plusDays(INSIGHT_DAYS - 1L), limit = 20),
-    ) { summary, insights, deadlines -> InsightUiState(false, summary, insights, deadlines, today) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), InsightUiState())
+        projectRepository.observeUpcomingDeadlines(today.plusDays(INSIGHT_DAYS - 1L), limit = 10),
+        activityRepository.observeRecentActivity(limit = 4),
+    ) { summary, insights, deadlines, activity ->
+        OverviewUiState(false, summary, insights, deadlines, activity, today)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OverviewUiState(today = today))
 }
 
-/** Full activity log behind the dashboard bell, newest first. */
+/** Full activity log, newest first. */
 data class ActivityLogUiState(val isLoading: Boolean = true, val entries: List<ActivityEntry> = emptyList())
 
 @HiltViewModel

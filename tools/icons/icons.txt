@@ -57,3 +57,7 @@ scan-line Scan
 # Navigation and header (reference redesign)
 bell Bell
 chart-no-axes-column BarChart
+# Glass redesign
+chevron-left ChevronLeft
+ellipsis Ellipsis
+layout-grid Grid

@@ -11,7 +11,7 @@ import com.portproof.feature.projects.editor.ProjectEditorRoute as ProjectEditor
 import com.portproof.feature.projects.list.ProjectListRoute
 import kotlinx.serialization.Serializable
 
-/** Top-level "Projects" tab. [filter] is a [ProjectListFilter.code] preselected by the caller. */
+/** Project list. [filter] is a [ProjectListFilter.code] preselected by the caller. */
 @Serializable
 data class ProjectsRoute(val filter: String? = null)
 
@@ -33,22 +33,27 @@ fun NavController.navigateToProjectDetail(id: ProjectId, navOptions: NavOptions?
 
 fun NavController.navigateToProjectEditor(id: ProjectId? = null) = navigate(ProjectEditorRoute(id?.value))
 
+fun NavController.navigateToProjects(filter: ProjectListFilter) = navigate(ProjectsRoute(filter.code))
+
 fun NavGraphBuilder.projectsScreen(
+    onBack: () -> Unit,
     onProjectClick: (ProjectId) -> Unit,
     onCreateProject: () -> Unit,
 ) {
     composable<ProjectsRoute> {
-        ProjectListRoute(onProjectClick = onProjectClick, onCreateProject = onCreateProject)
+        ProjectListRoute(onBack = onBack, onProjectClick = onProjectClick, onCreateProject = onCreateProject)
     }
 }
 
+/** [onHome] serves the header's close button: it leaves the project flow and returns to Home. */
 fun NavGraphBuilder.projectDetailScreen(
     onBack: () -> Unit,
+    onHome: () -> Unit,
     onEdit: (ProjectId) -> Unit,
     onDeleted: () -> Unit,
 ) {
     composable<ProjectDetailRoute> {
-        ProjectDetailScreenRoute(onBack = onBack, onEdit = onEdit, onDeleted = onDeleted)
+        ProjectDetailScreenRoute(onBack = onBack, onHome = onHome, onEdit = onEdit, onDeleted = onDeleted)
     }
 }
 
