@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pro_close">Close</string>
+    <string name="pro_title">PortProof Pro</string>
+    <plurals name="pro_subtitle_free">
+        <item quantity="one">You\u2019re using %1$d of %2$d active project on the free plan.</item>
+        <item quantity="other">You\u2019re using %1$d of %2$d active projects on the free plan.</item>
+    </plurals>
+    <string name="pro_subtitle_pro">You\u2019re on PortProof Pro. Thank you.</string>
+
+    <string name="pro_benefit_unlimited_title">Unlimited active projects</string>
+    <plurals name="pro_benefit_unlimited_body">
+        <item quantity="one">The free plan includes %1$d.</item>
+        <item quantity="other">The free plan includes %1$d.</item>
+    </plurals>
+    <string name="pro_benefit_offline_title">The same offline app</string>
+    <string name="pro_benefit_offline_body">Your records stay on this phone. Pro adds no account and no cloud sync.</string>
+    <string name="pro_benefit_cancel_title">Cancel anytime</string>
+    <string name="pro_benefit_cancel_body">Manage or cancel the subscription in Google Play.</string>
+
+    <string name="pro_plans">Choose a plan</string>
+    <string name="pro_plan_monthly">Monthly</string>
+    <string name="pro_plan_yearly">Yearly</string>
+    <string name="pro_plan_other">PortProof Pro</string>
+    <!-- %1$s = price, e.g. "€4.99" -->
+    <string name="pro_price_month">%1$s / month</string>
+    <string name="pro_price_year">%1$s / year</string>
+    <plurals name="pro_trial_days">
+        <item quantity="one">%1$d-day free trial</item>
+        <item quantity="other">%1$d-day free trial</item>
+    </plurals>
+    <string name="pro_trial_period">Free trial included</string>
+    <string name="pro_saving">Save %1$d%%</string>
+    <string name="pro_subscribe">Subscribe</string>
+    <string name="pro_start_trial">Start free trial</string>
+    <string name="pro_fine_print_month">Billed by Google Play. Renews every month until you cancel in Google Play.</string>
+    <string name="pro_fine_print_year">Billed by Google Play. Renews every year until you cancel in Google Play.</string>
+    <string name="pro_fine_print_trial">You won\u2019t be charged during the free trial. Cancel in Google Play before it ends to avoid being billed.</string>
+    <string name="pro_restore">Restore purchases</string>
+    <string name="pro_manage">Manage in Google Play</string>
+    <string name="pro_active_title">PortProof Pro is active</string>
+    <string name="pro_active_body">There is no limit on active projects.</string>
+    <string name="pro_pending">Your payment is pending. Pro starts as soon as Google Play confirms it.</string>
+
+    <string name="pro_loading">Loading plans from Google Play\u2026</string>
+    <string name="pro_unavailable_billing">Plans can only be bought in the version of PortProof installed from Google Play, with Google Play signed in on this device.</string>
+    <string name="pro_unavailable_plans">Google Play has no PortProof Pro plans for this version of the app yet.</string>
+    <string name="pro_unavailable_network">Google Play couldn\u2019t be reached. Check your connection and try again.</string>
+    <string name="pro_unavailable_error">Something went wrong while loading plans.</string>
+    <string name="pro_try_again">Try again</string>
+
+    <string name="pro_msg_purchased">Welcome to PortProof Pro</string>
+    <string name="pro_msg_pending">Payment pending. Pro starts when it completes.</string>
+    <string name="pro_msg_could_not_open">Google Play couldn\u2019t open the purchase. Please try again.</string>
+
+    <string name="pro_debug_title">Testing (debug builds only)</string>
+    <string name="pro_debug_switch">Treat this device as Pro</string>
+    <string name="pro_debug_body">Debug builds aren\u2019t installed from Google Play, so purchases usually can\u2019t be made in them. This switch only exists in debug builds.</string>
+</resources>

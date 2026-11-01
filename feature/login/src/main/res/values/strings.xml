@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Welcome pages (reference: "Your Food, Decoded By AI") -->
+    <string name="login_welcome_1_title">Every install,\ndocumented</string>
+    <string name="login_welcome_1_body">Record the customer, site, dates and status of each job. Works offline.</string>
+    <!-- Pinned labels show fields PortProof records today (status, reference, site), not planned features. -->
+    <string name="login_welcome_1_pin_a">In progress</string>
+    <string name="login_welcome_1_pin_b">Ref. PO-2041</string>
+    <string name="login_welcome_1_pin_c">Site · Comms room</string>
+    <string name="login_welcome_2_title">See what needs\nattention</string>
+    <string name="login_welcome_2_body">Overdue dates and missing details are highlighted on every project.</string>
+    <string name="login_welcome_2_pin_a">Day 12 of 20</string>
+    <string name="login_welcome_2_pin_b">2 days overdue</string>
+    <string name="login_welcome_2_pin_c">No site yet</string>
+    <string name="login_welcome_3_title">Locked with\nyour PIN</string>
+    <string name="login_welcome_3_body">Your records stay on this phone. No account and no cloud.</string>
+    <string name="login_welcome_3_pin_a">PIN lock</string>
+    <string name="login_welcome_3_pin_b">No account</string>
+    <string name="login_welcome_3_pin_c">Offline</string>
+    <string name="login_welcome_art">Illustration</string>
+    <string name="login_page_of">Page %1$d of %2$d</string>
+    <string name="login_next">Next</string>
+    <string name="login_get_started">Get Started</string>
+
+    <!-- Setup -->
+    <string name="login_setup_profile_title">Create your login</string>
+    <string name="login_setup_profile_body">Your name is shown when you log in. It stays on this phone.</string>
+    <string name="login_field_name">Your name *</string>
+    <string name="login_field_company">Company (optional)</string>
+    <string name="login_continue">Continue</string>
+    <string name="login_error_name_required">Enter your name</string>
+    <plurals name="login_error_too_long">
+        <item quantity="one">Must be %1$d character or fewer</item>
+        <item quantity="other">Must be %1$d characters or fewer</item>
+    </plurals>
+    <string name="login_setup_pin_title">Choose a 6-digit PIN</string>
+    <string name="login_setup_pin_body">You\u2019ll enter it each time you open PortProof.</string>
+    <string name="login_setup_confirm_title">Enter your PIN again</string>
+    <string name="login_setup_confirm_body">Type the same six digits to confirm.</string>
+    <string name="login_error_pin_simple">Avoid repeated or sequential digits such as 111111 or 123456.</string>
+    <string name="login_error_pin_mismatch">The PINs didn\u2019t match. Choose your PIN again.</string>
+    <string name="login_error_save">Couldn\u2019t save your login. Please try again.</string>
+    <string name="login_setup_bio_title">Unlock with your fingerprint?</string>
+    <string name="login_setup_bio_body">Use the fingerprint or face unlock set up on this phone instead of typing your PIN. Your PIN keeps working.</string>
+    <string name="login_bio_turn_on">Turn on</string>
+    <string name="login_bio_not_now">Not now</string>
+    <string name="login_bio_prompt_title">Unlock PortProof</string>
+    <string name="login_bio_prompt_subtitle">Confirm it\u2019s you</string>
+    <string name="login_bio_prompt_cancel">Use PIN</string>
+
+    <!-- Unlock (the login screen) -->
+    <string name="login_unlock_title_name">Welcome back,\n%1$s</string>
+    <string name="login_unlock_title">Welcome back</string>
+    <string name="login_unlock_body">Enter your PIN to open PortProof</string>
+    <plurals name="login_wrong_pin">
+        <item quantity="one">Wrong PIN. %1$d more try before a short wait.</item>
+        <item quantity="other">Wrong PIN. %1$d more tries before a short wait.</item>
+    </plurals>
+    <string name="login_locked_out">Too many wrong PINs. Try again in %1$s.</string>
+    <string name="login_error_generic">Couldn\u2019t check your PIN. Please try again.</string>
+    <string name="login_forgot">Forgot PIN?</string>
+    <string name="login_forgot_title">Forgot your PIN?</string>
+    <string name="login_forgot_message">PortProof has no account, so a PIN can\u2019t be recovered. You can erase all PortProof data on this phone and start again. Your projects will be deleted.</string>
+    <string name="login_forgot_erase">Erase all data</string>
+    <string name="login_cancel">Cancel</string>
+    <string name="login_backspace">Delete last digit</string>
+    <string name="login_use_fingerprint">Unlock with fingerprint</string>
+    <plurals name="login_digits_entered">
+        <item quantity="one">%1$d of %2$d digits entered</item>
+        <item quantity="other">%1$d of %2$d digits entered</item>
+    </plurals>
+
+    <!-- Login & security (from Settings) -->
+    <string name="login_security_title">Login &amp; security</string>
+    <string name="login_change_pin">Change PIN</string>
+    <string name="login_change_pin_body">Enter your current PIN, then a new one</string>
+    <string name="login_change_current">Enter your current PIN</string>
+    <string name="login_change_new">Choose a new PIN</string>
+    <string name="login_change_confirm">Enter the new PIN again</string>
+    <string name="login_fingerprint">Unlock with fingerprint</string>
+    <string name="login_fingerprint_body">Use the fingerprint or face unlock set up on this phone.</string>
+    <string name="login_fingerprint_unavailable">Set up a fingerprint or face unlock in Android settings to use this.</string>
+    <string name="login_lock_now">Lock now</string>
+    <string name="login_lock_info">PortProof asks for your PIN each time it starts and after 5 minutes in the background.</string>
+    <string name="login_msg_wrong_current">That isn\u2019t your current PIN.</string>
+    <string name="login_msg_locked_out">Too many wrong PINs. Try again later.</string>
+    <string name="login_msg_pin_changed">PIN changed</string>
+</resources>
